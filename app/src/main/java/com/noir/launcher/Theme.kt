@@ -1,0 +1,114 @@
+package com.noir.launcher
+
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.sp
+
+object NoirColors {
+    val Black = Color(0xFF000000)
+    val White = Color(0xFFFFFFFF)
+    val Muted = Color(0xFF8C8C8C)
+    val Dim = Color(0xFF555555)
+    val Hairline = Color(0x26FFFFFF)
+}
+
+/**
+ * Police : sans-serif du système (Roboto sur la plupart des téléphones Android).
+ * Pour une autre police, déposer un .ttf dans res/font/ et la remplacer ici
+ * par FontFamily(Font(R.font.ma_police)).
+ */
+val NoirFont: FontFamily = FontFamily.SansSerif
+
+object NoirType {
+    val Clock = TextStyle(
+        fontFamily = NoirFont,
+        fontWeight = FontWeight.Thin,
+        fontSize = 96.sp,
+        letterSpacing = (-2).sp,
+        color = NoirColors.White,
+    )
+    val Date = TextStyle(
+        fontFamily = NoirFont,
+        fontWeight = FontWeight.Light,
+        fontSize = 18.sp,
+        color = NoirColors.Muted,
+    )
+    val Search = TextStyle(
+        fontFamily = NoirFont,
+        fontWeight = FontWeight.Light,
+        fontSize = 22.sp,
+        color = NoirColors.White,
+    )
+    val Hint = TextStyle(
+        fontFamily = NoirFont,
+        fontWeight = FontWeight.Light,
+        fontSize = 22.sp,
+        color = NoirColors.Dim,
+    )
+    val Result = TextStyle(
+        fontFamily = NoirFont,
+        fontWeight = FontWeight.Light,
+        fontSize = 30.sp,
+        color = NoirColors.White,
+    )
+    val DayHeader = TextStyle(
+        fontFamily = NoirFont,
+        fontWeight = FontWeight.Medium,
+        fontSize = 12.sp,
+        letterSpacing = 1.6.sp,
+        color = NoirColors.Muted,
+    )
+    val EventTime = TextStyle(
+        fontFamily = NoirFont,
+        fontWeight = FontWeight.Normal,
+        fontSize = 13.sp,
+        color = NoirColors.Muted,
+    )
+    val EventTitle = TextStyle(
+        fontFamily = NoirFont,
+        fontWeight = FontWeight.Light,
+        fontSize = 20.sp,
+        color = NoirColors.White,
+    )
+    val EventPlace = TextStyle(
+        fontFamily = NoirFont,
+        fontWeight = FontWeight.Light,
+        fontSize = 14.sp,
+        color = NoirColors.Dim,
+    )
+    val Body = TextStyle(
+        fontFamily = NoirFont,
+        fontWeight = FontWeight.Light,
+        fontSize = 16.sp,
+        color = NoirColors.Muted,
+    )
+    val Action = TextStyle(
+        fontFamily = NoirFont,
+        fontWeight = FontWeight.Normal,
+        fontSize = 18.sp,
+        color = NoirColors.White,
+        textDecoration = TextDecoration.Underline,
+    )
+}
+
+/** Zone cliquable sans effet visuel (pas de ripple sur fond noir). */
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun Modifier.tappable(
+    onLongClick: (() -> Unit)? = null,
+    onClick: () -> Unit,
+): Modifier = this.combinedClickable(
+    interactionSource = remember { MutableInteractionSource() },
+    indication = null,
+    onLongClick = onLongClick,
+    onClick = onClick,
+)
