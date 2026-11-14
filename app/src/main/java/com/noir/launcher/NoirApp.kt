@@ -20,7 +20,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
-fun NoirApp(resetTick: Int, resumeTick: Int) {
+fun NoirApp(
+    resetTick: Int,
+    resumeTick: Int,
+    widgets: WidgetController,
+    configureWidget: (Int, (Boolean) -> Unit) -> Unit,
+) {
     val context = LocalContext.current
     val pagerState = rememberPagerState(pageCount = { 2 })
     val scope = rememberCoroutineScope()
@@ -28,7 +33,7 @@ fun NoirApp(resetTick: Int, resumeTick: Int) {
     var query by rememberSaveable { mutableStateOf("") }
     var apps by remember { mutableStateOf<List<AppEntry>>(emptyList()) }
 
-    // Retour à l'accueil : recherche vidée, page d'accueil (pas l'agenda).
+    // Retour à l'accueil (touche Accueil) : recherche vidée, page d'accueil.
     LaunchedEffect(resetTick) {
         query = ""
         if (pagerState.currentPage != 0) pagerState.scrollToPage(0)
@@ -65,7 +70,7 @@ fun NoirApp(resetTick: Int, resumeTick: Int) {
                 resumeTick = resumeTick,
             )
         } else {
-            AgendaPage(resumeTick = resumeTick)
+            WidgetPage(controller = widgets, configure = configureWidget)
         }
     }
 }

@@ -2,13 +2,7 @@
 <resources>
     <string name="app_name">Noir</string>
     <string name="search_hint">Rechercher</string>
-    <string name="today">Aujourd\'hui</string>
-    <string name="tomorrow">Demain</string>
-    <string name="all_day">Toute la journée</string>
-    <string name="untitled">(Sans titre)</string>
-    <string name="nothing_planned">Rien de prévu aujourd\'hui</string>
-    <string name="nothing_planned_days">Rien de prévu dans les %1$d prochains jours</string>
-    <string name="agenda_permission_text">Pour afficher ton agenda, Noir a besoin de lire tes calendriers.</string>
-    <string name="allow_agenda">Autoriser l\'accès à l\'agenda</string>
-    <string name="open_settings">Ouvrir les réglages</string>
+    <string name="widget_choose">Choisis le widget Google Agenda à afficher ici.</string>
+    <string name="widget_none">Aucun widget Google Agenda trouvé. Installe ou mets à jour Google Agenda.</string>
+    <string name="widget_change">Changer de widget</string>
 </resources>

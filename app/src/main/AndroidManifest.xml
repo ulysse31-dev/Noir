@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Lecture de l'agenda (Google Agenda synchronisé sur le téléphone) -->
-    <uses-permission android:name="android.permission.READ_CALENDAR" />
-
-    <!-- Nécessaire (Android 11+) pour lister les applis lançables -->
+    <!-- Nécessaire (Android 11+) pour lister les applis lançables et les widgets installés -->
     <queries>
         <intent>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+        <intent>
+            <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
         </intent>
     </queries>
 
@@ -32,7 +32,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
 
-            <!-- Permet à Android Studio de le lancer directement -->
+            <!-- Permet de le lancer comme une appli normale -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

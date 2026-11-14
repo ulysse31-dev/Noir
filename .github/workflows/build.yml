@@ -24,7 +24,22 @@ jobs:
           gradle-version: 8.9
 
       - name: Compiler
-        run: gradle assembleDebug --no-daemon --stacktrace
+        run: |
+          set -o pipefail
+          gradle assembleDebug --no-daemon 2>&1 | tee build.log
+
+      - name: Publier le journal d'erreur
+        if: failure()
+        run: |
+          { grep -nE "^e: |error:|What went wrong" -A4 build.log | head -150; echo ----; tail -n 40 build.log; } > /tmp/build-error.log || true
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git checkout --orphan build-log
+          git rm -rf . -q
+          cp /tmp/build-error.log build-error.log
+          git add build-error.log
+          git commit -q -m "Journal d'erreur du build"
+          git push -f origin build-log
 
       - name: Publier l'APK
         env:
