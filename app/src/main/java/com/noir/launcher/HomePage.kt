@@ -46,7 +46,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 /**
- * Accueil : fond noir, clavier ouvert sur la barre de recherche.
+ * Accueil : fond noir, clavier fermé (il s'ouvre en touchant la barre de recherche).
  * Recherche vide -> l'heure et la date. Dès qu'on tape -> les résultats (texte seul),
  * le meilleur résultat étant le plus proche du champ.
  */
@@ -66,16 +66,11 @@ fun HomePage(
     val focusManager = LocalFocusManager.current
     val keyboard = LocalSoftwareKeyboardController.current
 
-    // Au retour à l'accueil : focus + clavier. Sur la page Agenda : on range le clavier.
+    // Clavier fermé par défaut : rangé à chaque retour à l'accueil et en changeant de page.
+    // Il s'ouvre en touchant la barre de recherche.
     LaunchedEffect(active, resetTick) {
-        if (active) {
-            delay(150)
-            runCatching { focusRequester.requestFocus() }
-            keyboard?.show()
-        } else {
-            keyboard?.hide()
-            focusManager.clearFocus()
-        }
+        keyboard?.hide()
+        focusManager.clearFocus()
     }
 
     LaunchedEffect(results) {

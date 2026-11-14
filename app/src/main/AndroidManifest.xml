@@ -23,7 +23,7 @@
             android:exported="true"
             android:launchMode="singleTask"
             android:stateNotNeeded="true"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="stateHidden|adjustResize">
 
             <!-- Écran d'accueil -->
             <intent-filter>
