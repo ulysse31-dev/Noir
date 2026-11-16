@@ -91,6 +91,24 @@ object NoirType {
         fontSize = 16.sp,
         color = NoirColors.Muted,
     )
+    val Shortcut = TextStyle(
+        fontFamily = NoirFont,
+        fontWeight = FontWeight.Light,
+        fontSize = 20.sp,
+        color = NoirColors.White,
+    )
+    val WeatherSummary = TextStyle(
+        fontFamily = NoirFont,
+        fontWeight = FontWeight.Light,
+        fontSize = 18.sp,
+        color = NoirColors.White,
+    )
+    val Legend = TextStyle(
+        fontFamily = NoirFont,
+        fontWeight = FontWeight.Normal,
+        fontSize = 11.sp,
+        color = NoirColors.Dim,
+    )
     val Action = TextStyle(
         fontFamily = NoirFont,
         fontWeight = FontWeight.Normal,

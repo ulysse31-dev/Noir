@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- Météo (Open-Meteo) -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <!-- Nécessaire (Android 11+) pour lister les applis lançables et les widgets installés -->
     <queries>
         <intent>

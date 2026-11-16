@@ -5,4 +5,12 @@
     <string name="widget_choose">Choisis le widget Google Agenda à afficher ici.</string>
     <string name="widget_none">Aucun widget Google Agenda trouvé. Installe ou mets à jour Google Agenda.</string>
     <string name="widget_change">Changer de widget</string>
+    <string name="sc_whatsapp">WhatsApp</string>
+    <string name="sc_messages">Messages</string>
+    <string name="sc_phone">Téléphone</string>
+    <string name="sc_maps">Maps</string>
+    <string name="sc_chrome">Chrome</string>
+    <string name="sc_camera">Photo</string>
+    <string name="ask_claude">Demander à Claude</string>
+    <string name="weather_legend">température · pluie % · vent km/h</string>
 </resources>
