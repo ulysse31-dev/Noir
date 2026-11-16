@@ -12,5 +12,5 @@
     <string name="sc_chrome">Chrome</string>
     <string name="sc_camera">Photo</string>
     <string name="ask_claude">Demander à Claude</string>
-    <string name="weather_legend">température · pluie % · vent km/h</string>
+    <string name="search_google">Chercher sur Google</string>
 </resources>

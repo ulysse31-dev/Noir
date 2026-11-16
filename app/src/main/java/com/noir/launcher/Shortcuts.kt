@@ -50,3 +50,10 @@ fun askClaude(context: Context, question: String) {
     if (q.isEmpty()) return
     context.start(Intent(Intent.ACTION_VIEW, Uri.parse("https://claude.ai/new?q=" + Uri.encode(q))))
 }
+
+/** Recherche Google dans le navigateur (ou l'appli Google si elle prend le lien). */
+fun searchGoogle(context: Context, query: String) {
+    val q = query.trim()
+    if (q.isEmpty()) return
+    context.start(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/search?q=" + Uri.encode(q))))
+}

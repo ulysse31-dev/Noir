@@ -19,7 +19,6 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
@@ -30,7 +29,7 @@ import kotlin.math.max
 import kotlin.math.roundToInt
 
 private val COL_WIDTH = 52.dp
-private val CHART_HEIGHT = 176.dp
+private val CHART_HEIGHT = 130.dp
 
 /** Résumé en une phrase + courbe de température, barres de pluie, heure et vent (défile à l'horizontale). */
 @Composable
@@ -41,17 +40,12 @@ fun WeatherBlock(points: List<HourPoint>) {
             style = NoirType.WeatherSummary,
             modifier = Modifier.padding(horizontal = 28.dp),
         )
-        Spacer(Modifier.height(14.dp))
+        Spacer(Modifier.height(8.dp))
         Row(Modifier.horizontalScroll(rememberScrollState())) {
             Spacer(Modifier.width(2.dp))
             WeatherChart(points)
             Spacer(Modifier.width(28.dp))
         }
-        BasicText(
-            text = stringResource(R.string.weather_legend),
-            style = NoirType.Legend,
-            modifier = Modifier.padding(horizontal = 28.dp, vertical = 6.dp),
-        )
     }
 }
 
@@ -79,12 +73,12 @@ private fun WeatherChart(points: List<HourPoint>) {
             .height(CHART_HEIGHT),
     ) {
         val col = COL_WIDTH.toPx()
-        val curveTop = 30.dp.toPx()
-        val curveBottom = 76.dp.toPx()
-        val rainBase = 132.dp.toPx()
-        val rainMax = 30.dp.toPx()
-        val hourY = 140.dp.toPx()
-        val windY = 160.dp.toPx()
+        val curveTop = 22.dp.toPx()
+        val curveBottom = 52.dp.toPx()
+        val rainBase = 90.dp.toPx()
+        val rainMax = 20.dp.toPx()
+        val hourY = 96.dp.toPx()
+        val windY = 112.dp.toPx()
         val range = max(tMax - tMin, 1.0).toFloat()
 
         fun cx(i: Int): Float = col * (i + 0.5f)
@@ -139,9 +133,9 @@ private fun WeatherChart(points: List<HourPoint>) {
                     size = Size(14.dp.toPx(), h),
                 )
             }
-            if (p.rainProb >= 20) label("${p.rainProb}%", rainStyle, x, rainBase - h - 15.dp.toPx())
+            if (p.rainProb >= 20) label("${p.rainProb}%", rainStyle, x, rainBase - h - 14.dp.toPx())
             drawCircle(color = NoirColors.White, radius = 2.5.dp.toPx(), center = Offset(x, cy(p.temp)))
-            label("${p.temp.roundToInt()}°", tempStyle, x, cy(p.temp) - 24.dp.toPx())
+            label("${p.temp.roundToInt()}°", tempStyle, x, cy(p.temp) - 21.dp.toPx())
             label("${p.time.hour}h", hourStyle, x, hourY)
             label("${p.wind.roundToInt()}", windStyle, x, windY)
         }

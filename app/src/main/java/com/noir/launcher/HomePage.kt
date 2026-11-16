@@ -1,9 +1,11 @@
 package com.noir.launcher
 
 import android.text.format.DateFormat
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -146,7 +148,12 @@ fun HomePage(
         }
 
         if (query.isNotBlank()) {
-            ClaudeRow(onAsk = { askClaude(context, query) })
+            ActionRow(R.drawable.ic_spark, stringResource(R.string.ask_claude)) {
+                askClaude(context, query)
+            }
+            ActionRow(R.drawable.ic_search, stringResource(R.string.search_google)) {
+                searchGoogle(context, query)
+            }
         }
 
         SearchField(
@@ -155,7 +162,11 @@ fun HomePage(
             onGo = {
                 val q = query.trim()
                 val ask = q.startsWith("?") || q.endsWith("?")
-                if (ask || results.isEmpty()) askClaude(context, query) else launchApp(context, results[0])
+                when {
+                    ask -> askClaude(context, query)
+                    results.isEmpty() -> searchGoogle(context, query)
+                    else -> launchApp(context, results[0])
+                }
             },
             focusRequester = focusRequester,
         )
@@ -172,69 +183,55 @@ private fun HomeContent(next24: List<HourPoint>, resumeTick: Int) {
                 modifier = Modifier.padding(start = 28.dp, end = 28.dp, top = 12.dp),
             )
             if (next24.isNotEmpty()) {
-                Spacer(Modifier.height(20.dp))
+                Spacer(Modifier.height(16.dp))
                 WeatherBlock(next24)
             }
         }
 
-        Column(
-            Modifier
+        // Pictos seuls, alignés sur une ligne ; l'appareil photo est le dernier, dans le coin à droite.
+        Row(
+            modifier = Modifier
                 .align(Alignment.BottomStart)
-                .padding(start = 28.dp, bottom = 12.dp),
+                .fillMaxWidth()
+                .padding(horizontal = 14.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            shortcuts.forEach { s ->
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .tappable { s.launch(context) }
-                        .padding(end = 24.dp, top = 10.dp, bottom = 10.dp),
+            (shortcuts + cameraShortcut).forEach { s ->
+                Box(
+                    Modifier
+                        .size(56.dp)
+                        .tappable { s.launch(context) },
+                    contentAlignment = Alignment.Center,
                 ) {
                     Image(
                         painter = painterResource(s.icon),
-                        contentDescription = null,
-                        modifier = Modifier.size(26.dp),
+                        contentDescription = stringResource(s.label),
+                        modifier = Modifier.size(28.dp),
                     )
-                    Spacer(Modifier.width(18.dp))
-                    BasicText(text = stringResource(s.label), style = NoirType.Shortcut)
                 }
             }
-        }
-
-        // Appareil photo : dans le coin en bas à droite
-        Box(
-            Modifier
-                .align(Alignment.BottomEnd)
-                .padding(end = 16.dp, bottom = 12.dp)
-                .size(64.dp)
-                .tappable { cameraShortcut.launch(context) },
-            contentAlignment = Alignment.Center,
-        ) {
-            Image(
-                painter = painterResource(cameraShortcut.icon),
-                contentDescription = stringResource(cameraShortcut.label),
-                modifier = Modifier.size(32.dp),
-            )
         }
     }
 }
 
 @Composable
-private fun ClaudeRow(onAsk: () -> Unit) {
+private fun ActionRow(@DrawableRes icon: Int, text: String, onClick: () -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .tappable(onClick = onAsk)
+            .tappable(onClick = onClick)
             .padding(horizontal = 28.dp, vertical = 14.dp),
     ) {
         Image(
-            painter = painterResource(R.drawable.ic_spark),
+            painter = painterResource(icon),
             contentDescription = null,
             modifier = Modifier.size(24.dp),
         )
         Spacer(Modifier.width(16.dp))
         BasicText(
-            text = stringResource(R.string.ask_claude),
+            text = text,
             style = NoirType.Shortcut,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
