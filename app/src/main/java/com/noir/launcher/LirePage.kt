@@ -39,7 +39,8 @@ import androidx.compose.ui.unit.dp
 private sealed interface PoemUi {
     data object Loading : PoemUi
     data class Ready(val text: String) : PoemUi
-    data object Offline : PoemUi
+    /** Échec de chargement : [reason] aide à comprendre ce qui coince. */
+    data class Offline(val reason: String) : PoemUi
 }
 
 /**
@@ -55,6 +56,7 @@ fun LirePage(active: Boolean, resumeTick: Int) {
     var ui by remember { mutableStateOf<PoemUi>(PoemUi.Loading) }
     var retry by remember { mutableIntStateOf(0) }
     var learnedCount by remember { mutableIntStateOf(store.learned().size) }
+    var lastFailure by remember { mutableStateOf("") }
     var initialsOnly by rememberSaveable { mutableStateOf(false) }
 
     // Charge le poème en cours (depuis le téléphone, sinon depuis Wikisource).
@@ -73,12 +75,14 @@ fun LirePage(active: Boolean, resumeTick: Int) {
                 store.cache(ref.id, r.text)
                 ui = PoemUi.Ready(r.text)
             }
-            PoemResult.Missing -> {
-                // Texte introuvable : on le laisse de côté et on passe au suivant.
+            is PoemResult.Missing -> {
+                // Texte introuvable : on l'écarte pour cette fois (pas définitivement) et on passe au suivant.
+                lastFailure = "${ref.title} — ${r.reason}"
                 store.markBad(ref.id)
                 index = store.next(i)
+                if (index == null) ui = PoemUi.Offline(lastFailure)
             }
-            PoemResult.Offline -> ui = PoemUi.Offline
+            is PoemResult.Offline -> ui = PoemUi.Offline(r.reason)
         }
     }
 
@@ -91,8 +95,8 @@ fun LirePage(active: Boolean, resumeTick: Int) {
         if (store.cached(ref.id) != null) return@LaunchedEffect
         when (val r = fetchPoem(ref)) {
             is PoemResult.Ok -> store.cache(ref.id, r.text)
-            PoemResult.Missing -> store.markBad(ref.id)
-            PoemResult.Offline -> Unit
+            is PoemResult.Missing -> store.markBad(ref.id)
+            is PoemResult.Offline -> Unit
         }
     }
 
@@ -110,6 +114,25 @@ fun LirePage(active: Boolean, resumeTick: Int) {
             .navigationBarsPadding(),
     ) {
         val current = index
+        if (current == null && !store.allLearned()) {
+            // Il reste des poèmes à apprendre, mais aucun n'a pu être chargé : ce n'est pas « tout appris ».
+            Column(Modifier.padding(top = 64.dp)) {
+                Message(stringResource(R.string.poem_offline), stringResource(R.string.poem_retry)) {
+                    store.clearSkipped()
+                    index = store.current()
+                    ui = PoemUi.Loading
+                    retry++
+                }
+                if (lastFailure.isNotEmpty()) {
+                    BasicText(
+                        text = lastFailure,
+                        style = NoirType.DayHeader,
+                        modifier = Modifier.padding(horizontal = 28.dp),
+                    )
+                }
+            }
+            return@Column
+        }
         if (current == null) {
             Done(
                 learned = learnedCount,
@@ -153,8 +176,16 @@ fun LirePage(active: Boolean, resumeTick: Int) {
         ) {
             when (val state = ui) {
                 PoemUi.Loading -> Message(stringResource(R.string.poem_loading), null) {}
-                PoemUi.Offline -> Message(stringResource(R.string.poem_offline), stringResource(R.string.poem_retry)) {
-                    retry++
+                is PoemUi.Offline -> Column {
+                    Message(stringResource(R.string.poem_offline), stringResource(R.string.poem_retry)) {
+                        store.clearSkipped()
+                        retry++
+                    }
+                    BasicText(
+                        text = state.reason,
+                        style = NoirType.DayHeader,
+                        modifier = Modifier.padding(horizontal = 28.dp),
+                    )
                 }
                 is PoemUi.Ready -> {
                     val shown = remember(state.text, initialsOnly) {

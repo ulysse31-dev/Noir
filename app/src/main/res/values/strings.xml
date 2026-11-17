@@ -18,7 +18,7 @@
     <string name="weather_now">Maint.</string>
     <string name="read_progress">%1$d / %2$d apprises</string>
     <string name="poem_loading">Chargement du poème…</string>
-    <string name="poem_offline">Poème indisponible hors connexion.</string>
+    <string name="poem_offline">Poème indisponible pour le moment.</string>
     <string name="poem_retry">Réessayer</string>
     <string name="poem_done">Tout est appris.</string>
     <string name="poem_restart">Recommencer</string>
@@ -26,4 +26,6 @@
     <string name="cd_skip">Passer au poème suivant</string>
     <string name="cd_hide">Masquer le texte : initiales seulement</string>
     <string name="cd_show">Afficher le texte entier</string>
+    <string name="cd_grayscale">Passer l\'écran en noir et blanc</string>
+    <string name="grayscale_hint">Autorisation requise pour basculer d\'un tap — voir le README. Réglages ouverts.</string>
 </resources>

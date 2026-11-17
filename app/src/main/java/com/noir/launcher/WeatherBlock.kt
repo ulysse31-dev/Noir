@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
@@ -42,6 +43,11 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import kotlin.math.max
 import kotlin.math.roundToInt
+
+// Un peu de couleur : chaud en haut de la courbe, froid en bas ; la pluie en bleu.
+private val WARM = Color(0xFFFFB45A)
+private val COOL = Color(0xFF6CB8FF)
+private val RAIN = Color(0xFF4F9DFF)
 
 private val COL_WIDTH = 52.dp
 private val CHART_HEIGHT = 124.dp
@@ -168,10 +174,15 @@ private fun WeatherChart(points: List<HourPoint>, playKey: Int) {
         val measure = PathMeasure().also { it.setPath(path, false) }
         val shown = Path()
         measure.getSegment(0f, measure.length * p, shown, true)
+        val curveBrush = Brush.verticalGradient(
+            colors = listOf(WARM, COOL),
+            startY = curveTop,
+            endY = curveBottom,
+        )
         drawPath(
             path = shown,
-            color = NoirColors.White,
-            style = Stroke(width = 2.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round),
+            brush = curveBrush,
+            style = Stroke(width = 2.5.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round),
         )
 
         // Barres de pluie (poussent après la courbe), points, températures toutes les 3 h, heures
@@ -184,7 +195,7 @@ private fun WeatherChart(points: List<HourPoint>, playKey: Int) {
             val h = rainMax * (pt.rainProb.coerceIn(0, 100) / 100f) * grow
             if (h > 1f) {
                 drawRoundRect(
-                    color = NoirColors.White.copy(alpha = 0.3f),
+                    color = RAIN.copy(alpha = 0.55f),
                     topLeft = Offset(x - 6.dp.toPx(), rainBase - h),
                     size = Size(12.dp.toPx(), h),
                     cornerRadius = CornerRadius(3.dp.toPx()),
@@ -194,7 +205,7 @@ private fun WeatherChart(points: List<HourPoint>, playKey: Int) {
             if (i % 3 == 0) {
                 val y = cy(pt.temp)
                 drawCircle(
-                    color = NoirColors.White.copy(alpha = reveal),
+                    color = tempColor(pt.temp, tMin, range).copy(alpha = reveal),
                     radius = 3.dp.toPx() * (0.4f + 0.6f * reveal),
                     center = Offset(x, y),
                 )
@@ -207,10 +218,16 @@ private fun WeatherChart(points: List<HourPoint>, playKey: Int) {
         // Anneau « maintenant »
         val y0 = cy(points[0].temp)
         drawCircle(
-            color = NoirColors.White.copy(alpha = (1f - pulseV) * 0.8f * p),
+            color = tempColor(points[0].temp, tMin, range).copy(alpha = (1f - pulseV) * 0.8f * p),
             radius = (4f + 14f * pulseV).dp.toPx(),
             center = Offset(cx(0), y0),
             style = Stroke(width = 1.dp.toPx()),
         )
     }
+}
+
+/** Couleur d'un point de la courbe : de bleu clair (le plus froid) à ambre (le plus chaud). */
+private fun tempColor(t: Double, tMin: Double, range: Float): Color {
+    val f = ((t - tMin).toFloat() / range).coerceIn(0f, 1f)
+    return lerp(COOL, WARM, f)
 }

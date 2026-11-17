@@ -47,7 +47,7 @@ val POEMS: List<PoemRef> = listOf(
 )
 
 private const val KEY_LEARNED = "poem_learned"
-private const val KEY_BAD = "poem_bad"
+private const val KEY_BAD = "poem_bad" // ancien réglage : on l'efface, un échec n'est plus définitif
 private const val KEY_CURSOR = "poem_cursor"
 private const val AGENT = "Noir/1.0 (Android launcher; https://github.com/ulysse31-dev/Noir)"
 private const val API = "https://fr.wikisource.org/w/api.php"
@@ -56,16 +56,32 @@ private const val API = "https://fr.wikisource.org/w/api.php"
 class PoemStore(context: Context) {
     private val prefs = context.applicationContext.getSharedPreferences("noir", Context.MODE_PRIVATE)
 
+    /** Poèmes dont le chargement a échoué : écartés jusqu'à la prochaine ouverture, jamais définitivement. */
+    private val skipped = mutableSetOf<String>()
+
+    init {
+        // Une ancienne version marquait les poèmes non chargés comme « introuvables » pour toujours.
+        prefs.edit().remove(KEY_BAD).apply()
+    }
+
     fun learned(): Set<String> = prefs.getStringSet(KEY_LEARNED, emptySet()).orEmpty().toSet()
-    private fun bad(): Set<String> = prefs.getStringSet(KEY_BAD, emptySet()).orEmpty().toSet()
+    private fun bad(): Set<String> = skipped
 
     fun markLearned(id: String) {
         prefs.edit().putStringSet(KEY_LEARNED, learned() + id).apply()
     }
 
     fun markBad(id: String) {
-        prefs.edit().putStringSet(KEY_BAD, bad() + id).apply()
+        skipped += id
     }
+
+    /** Remet en jeu les poèmes écartés (bouton « Réessayer »). */
+    fun clearSkipped() {
+        skipped.clear()
+    }
+
+    /** Tous les poèmes ont été cochés. */
+    fun allLearned(): Boolean = POEMS.all { it.id in learned() }
 
     fun reset() {
         prefs.edit().putStringSet(KEY_LEARNED, emptySet()).putInt(KEY_CURSOR, 0).apply()
@@ -115,10 +131,10 @@ class PoemStore(context: Context) {
 
 sealed interface PoemResult {
     data class Ok(val text: String) : PoemResult
-    /** Aucun texte exploitable trouvé : on passe au suivant. */
-    data object Missing : PoemResult
-    /** Pas de connexion : on réessaiera. */
-    data object Offline : PoemResult
+    /** Aucun texte exploitable trouvé : on passe au suivant (le détail sert à comprendre l'échec). */
+    data class Missing(val reason: String) : PoemResult
+    /** Pas de connexion ou réponse refusée : on réessaiera. */
+    data class Offline(val reason: String) : PoemResult
 }
 
 // ---------- Wikisource ----------
@@ -165,6 +181,35 @@ private fun wikitext(page: String): String? {
 }
 
 private val POEM_BLOCK = Regex("<poem[^>]*>(.*?)</poem>", setOf(RegexOption.DOT_MATCHES_ALL, RegexOption.IGNORE_CASE))
+private val POEM_DIV = Regex("<div[^>]*class=\"[^\"]*\\bpoem\\b[^\"]*\"[^>]*>(.*?)</div>", setOf(RegexOption.DOT_MATCHES_ALL, RegexOption.IGNORE_CASE))
+
+private fun decodeEntities(s: String): String =
+    s.replace(Regex("&#(\\d+);")) { it.groupValues[1].toIntOrNull()?.let { c -> String(Character.toChars(c)) } ?: "" }
+        .replace(Regex("&#x([0-9a-fA-F]+);")) { it.groupValues[1].toIntOrNull(16)?.let { c -> String(Character.toChars(c)) } ?: "" }
+        .replace("&nbsp;", " ").replace("&quot;", "\"").replace("&apos;", "'")
+        .replace("&lt;", "<").replace("&gt;", ">").replace("&amp;", "&")
+
+/** Nettoyage commun : lignes propres, sans numéros romains seuls, taille raisonnable. */
+private fun finishPoem(raw: String): String? {
+    val lines = raw.lines()
+        .map { it.replace('\u00A0', ' ').trim().trimStart(':').trim() }
+        .filterNot { it.matches(Regex("^[IVXLC]+\\.?$")) }
+    val text = lines.joinToString("\n").replace(Regex("\n{3,}"), "\n\n").trim()
+    val nonEmpty = text.lines().count { it.isNotBlank() }
+    return if (nonEmpty in 4..120 && text.length <= 6000) text else null
+}
+
+/** Extrait le poème du HTML rendu par Wikisource (blocs « poem »). */
+internal fun extractPoemHtml(html: String): String? {
+    val blocks = POEM_DIV.findAll(html).map { it.groupValues[1] }.toList()
+    if (blocks.isEmpty()) return null
+    var t = blocks.joinToString("\n\n")
+    t = t.replace(Regex("<sup[^>]*>.*?</sup>", setOf(RegexOption.DOT_MATCHES_ALL, RegexOption.IGNORE_CASE)), "")
+    t = t.replace(Regex("<br\\s*/?>", RegexOption.IGNORE_CASE), "\n")
+    t = t.replace(Regex("</p>", RegexOption.IGNORE_CASE), "\n\n")
+    t = t.replace(Regex("<[^>]+>"), "")
+    return finishPoem(decodeEntities(t))
+}
 
 /** Extrait le texte du poème d'une page Wikisource (balises <poem>), nettoyé de la mise en forme wiki. */
 internal fun extractPoem(wikitext: String): String? {
@@ -181,38 +226,51 @@ internal fun extractPoem(wikitext: String): String? {
     t = t.replace("'''", "").replace("''", "")
     t = t.replace(Regex("<br\\s*/?>", RegexOption.IGNORE_CASE), "\n")
     t = t.replace(Regex("<[^>]+>"), "")
-    t = t.replace("&nbsp;", " ").replace("&#160;", " ").replace("&amp;", "&")
-        .replace("&quot;", "\"").replace("&lt;", "<").replace("&gt;", ">")
-    val lines = t.lines()
-        .map { it.trim().trimStart(':').trim() }
-        .filterNot { it.matches(Regex("^[IVXLC]+\\.?$")) }
-    val text = lines.joinToString("\n").replace(Regex("\n{3,}"), "\n\n").trim()
-    val nonEmpty = text.lines().count { it.isNotBlank() }
-    return if (nonEmpty in 4..80 && text.length <= 4000) text else null
+    return finishPoem(decodeEntities(t))
+}
+
+/** Page rendue (HTML) : traite les modèles et les balises poem comme le site. */
+private fun renderedHtml(page: String): String? {
+    val url = "$API?action=parse&format=json&formatversion=2&prop=text&redirects=1&disablelimitreport=1&page=${enc(page)}"
+    return try {
+        val o = JSONObject(get(url))
+        if (o.has("error")) null else o.optJSONObject("parse")?.optString("text")?.takeIf { it.isNotBlank() }
+    } catch (e: FileNotFoundException) {
+        null
+    }
 }
 
 /** Charge le texte d'un poème depuis Wikisource. */
 suspend fun fetchPoem(ref: PoemRef): PoemResult = withContext(Dispatchers.IO) {
+    var found = 0
+    var tried = 0
     try {
         val wanted = key(ref.title)
         val candidates = mutableListOf<String>()
         ref.page?.let { candidates += it }
+        val raw = mutableListOf<String>()
         for (q in listOf("${ref.title} ${ref.author}", ref.title)) {
             val titles = searchTitles(q)
+            found += titles.size
+            if (raw.isEmpty()) raw += titles
             // Les pages de poème s'appellent « Recueil/Titre » : on compare la dernière partie.
             val exact = titles.filter { key(it.substringAfterLast('/')) == wanted }
             val partial = titles.filter { key(it.substringAfterLast('/')).contains(wanted) }
             candidates += (exact + partial).distinct()
             if (candidates.size >= 3) break
         }
-        for (page in candidates.distinct().take(5)) {
-            val text = wikitext(page)?.let { extractPoem(it) }
+        // En dernier recours : les premiers résultats de la recherche, tels quels.
+        candidates += raw.take(3)
+        for (page in candidates.distinct().take(8)) {
+            tried++
+            val text = renderedHtml(page)?.let { extractPoemHtml(it) }
+                ?: wikitext(page)?.let { extractPoem(it) }
             if (text != null) return@withContext PoemResult.Ok(text)
         }
-        PoemResult.Missing
+        PoemResult.Missing("recherche : $found résultats, $tried pages lues, aucun poème reconnu")
     } catch (e: IOException) {
-        PoemResult.Offline
+        PoemResult.Offline(e.message ?: e.javaClass.simpleName)
     } catch (e: org.json.JSONException) {
-        PoemResult.Missing
+        PoemResult.Missing("réponse illisible de Wikisource (${e.message?.take(60)})")
     }
 }

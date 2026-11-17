@@ -29,3 +29,18 @@ L'APK est signé avec une clé fixe (`app/noir.keystore`) et son numéro de vers
 - Position de l'heure : `top = 100.dp` dans `HomeContent` (HomePage.kt).
 
 Pictos : Material Symbols (Google), licence Apache 2.0.
+
+## Noir et blanc (bouton en haut à droite de l'accueil)
+
+Le picto « contraste » bascule l'écran du téléphone en niveaux de gris (filtre Android « monochromie »).
+Pour que ça marche d'un tap, une autorisation à donner **une seule fois** (depuis un ordinateur ou une appli adb sur le téléphone, ex. LADB) :
+
+    adb shell pm grant com.noir.launcher android.permission.WRITE_SECURE_SETTINGS
+
+Sans cette autorisation, le bouton ouvre les réglages d'accessibilité. Sur un Galaxy, le noir et blanc existe aussi dans
+Réglages > Bien-être numérique > Mode Coucher (« Échelle de gris »), ou via Options pour les développeurs > « Simuler un espace colorimétrique » > Monochromie.
+
+## Poèmes : en cas de souci
+
+Un poème qui ne se charge pas n'est jamais retiré pour de bon : il est simplement écarté jusqu'à la prochaine ouverture.
+Si aucun ne se charge, la page affiche « Réessayer » et, en petit, la cause (nombre de résultats, pages lues…).

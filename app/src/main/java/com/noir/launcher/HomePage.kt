@@ -205,6 +205,24 @@ private fun HomeContent(next24: List<HourPoint>, resumeTick: Int, playKey: Int) 
             }
         }
 
+        // Petit picto en haut à droite : écran du téléphone en noir et blanc.
+        Box(
+            Modifier
+                .align(Alignment.TopEnd)
+                .padding(top = 12.dp, end = 17.dp)
+                .size(48.dp)
+                .popIn(delayMillis = 400, key = playKey)
+                .springTappable { toggleGrayscale(context) },
+            contentAlignment = Alignment.Center,
+        ) {
+            Image(
+                painter = painterResource(R.drawable.ic_contrast),
+                contentDescription = stringResource(R.string.cd_grayscale),
+                colorFilter = ColorFilter.tint(NoirColors.Muted),
+                modifier = Modifier.size(22.dp),
+            )
+        }
+
         // Pictos seuls, alignés sur une ligne ; l'appareil photo est le dernier, dans le coin à droite.
         Row(
             modifier = Modifier
