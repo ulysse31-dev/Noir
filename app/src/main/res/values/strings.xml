@@ -10,15 +10,20 @@
     <string name="sc_phone">Téléphone</string>
     <string name="sc_maps">Maps</string>
     <string name="sc_chrome">Chrome</string>
+    <string name="sc_spotify">Spotify</string>
     <string name="sc_camera">Photo</string>
     <string name="ask_claude">Demander à Claude</string>
     <string name="search_google">Chercher sur Google</string>
     <string name="ask_gemini">Parler à Gemini</string>
     <string name="weather_now">Maint.</string>
-    <string name="read_title">Lire</string>
-    <string name="read_subtitle">Pour les pauses.</string>
-    <string name="read_all">Tout</string>
-    <string name="read_featured">À la une · Wikipédia</string>
-    <string name="read_loading">Chargement…</string>
-    <string name="read_empty">Rien à lire pour l\'instant. Vérifie ta connexion.</string>
+    <string name="read_progress">%1$d / %2$d apprises</string>
+    <string name="poem_loading">Chargement du poème…</string>
+    <string name="poem_offline">Poème indisponible hors connexion.</string>
+    <string name="poem_retry">Réessayer</string>
+    <string name="poem_done">Tout est appris.</string>
+    <string name="poem_restart">Recommencer</string>
+    <string name="cd_learned">Poème appris, passer au suivant</string>
+    <string name="cd_skip">Passer au poème suivant</string>
+    <string name="cd_hide">Masquer le texte : initiales seulement</string>
+    <string name="cd_show">Afficher le texte entier</string>
 </resources>

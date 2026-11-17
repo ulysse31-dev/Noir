@@ -12,10 +12,10 @@ L'APK est signé avec une clé fixe (`app/noir.keystore`) et son numéro de vers
 
 - Accueil : clavier fermé (toucher la barre de recherche pour l'ouvrir) ; recherche vide = heure + date.
 - Résultats : le meilleur est le plus proche du champ. Toucher = lancer, appui long = infos de l'appli (désinstaller), touche « Go » du clavier = lancer le premier résultat.
-- Accueil, recherche vide : heure, météo des 24 prochaines heures (Allauch, via Open-Meteo : courbe de température, barres de pluie, heures ; défile à l'horizontale ; la courbe se dessine à chaque arrivée sur l'accueil), raccourcis WhatsApp / Messages / Téléphone / Maps / Chrome en pictos blancs alignés sur une ligne (sans texte), l'appareil photo à l'extrémité droite. Le clavier ouvert ne garde que l'heure.
-- Recherche : dès qu'on tape, un micro est à droite du champ vide : il lance Gemini (commande vocale, sinon l'appli, sinon l'assistant par défaut). Dès qu'on tape, il laisse la place à deux icônes grises : Claude (claude.ai, question pré-remplie) et Google. Ce sont les icônes réelles des applis installées, passées en niveaux de gris (pictogramme blanc neutre si l'appli est absente). Touche « Go » : Claude si la saisie commence ou finit par « ? », Google s'il n'y a aucun résultat d'appli, sinon le premier résultat.
+- Accueil, recherche vide : heure, météo des 24 prochaines heures (Allauch, via Open-Meteo : courbe de température, barres de pluie, heures ; défile à l'horizontale ; la courbe se dessine à chaque arrivée sur l'accueil), raccourcis WhatsApp / Messages / Téléphone / Maps / Chrome / Spotify en pictos blancs alignés sur une ligne (sans texte), l'appareil photo à l'extrémité droite. Le clavier ouvert ne garde que l'heure.
+- Recherche : dès qu'on tape, un micro est à droite du champ vide : il lance directement l'appli Gemini (à défaut l'assistant du téléphone, puis gemini.google.com). Dès qu'on tape, il laisse la place à deux icônes grises : Claude (claude.ai, question pré-remplie) et Google. Ce sont les icônes réelles des applis installées, passées en niveaux de gris (pictogramme blanc neutre si l'appli est absente). Touche « Go » : Claude si la saisie commence ou finit par « ? », Google s'il n'y a aucun résultat d'appli, sinon le premier résultat.
 - Touche Accueil : retour à l'accueil, recherche vidée, clavier refermé.
-- Page de gauche (glisser vers la droite) : Lire, entièrement branchée sur Wikipédia en français. L'article du jour, puis au choix « Ce jour-là » (événements de la date), « Plus lus », et des thèmes (Marseille, Photo, Web, IA) dont les articles changent chaque jour. Toucher ouvre l'article. Actualisé au plus toutes les 6 heures.
+- Page de gauche (glisser vers la droite) : Lire = un poème à apprendre. Un poème à la fois, en grand : l'œil barré affiche seulement les initiales pour réciter, la flèche passe au suivant, le rond blanc coché marque le poème comme appris et amène le suivant. La progression (« 3 / 19 apprises ») et les textes déjà chargés restent sur le téléphone. Les textes viennent de Wikisource (domaine public), seuls le titre et l'auteur sont dans le code : `POEMS` (Poems.kt).
 - Animations : ressort à l'appui sur les icônes, entrée décalée des raccourcis et des résultats, tracé de la courbe météo, pages voisines qui reculent pendant le glissement. Les pulsations (deux-points, anneau « maintenant ») s'arrêtent après quelques secondes pour ménager la batterie.
 - Page de droite (glisser vers la gauche) : le widget Google Agenda « jour » est choisi automatiquement (accepter la demande d'Android au premier passage) et occupe tout l'écran. À défaut de widget « jour », la liste « agenda » est prise. « Changer de widget » en bas à gauche ouvre la liste pour en choisir un autre.
 
@@ -25,7 +25,7 @@ L'APK est signé avec une clé fixe (`app/noir.keystore`) et son numéro de vers
 - Police et tailles : `Theme.kt`. Police par défaut = sans-serif du système.
 - Lieu de la météo : `WEATHER_LAT` / `WEATHER_LON` (Weather.kt).
 - Raccourcis : `Shortcuts.kt`.
-- Thèmes de la page Lire : `TOPIC_QUERIES` (Feed.kt), une recherche Wikipédia par thème.
+- Poèmes de la page Lire : `POEMS` (Poems.kt), une ligne par poème (titre, auteur).
 - Position de l'heure : `top = 100.dp` dans `HomeContent` (HomePage.kt).
 
 Pictos : Material Symbols (Google), licence Apache 2.0.

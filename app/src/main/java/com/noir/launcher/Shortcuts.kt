@@ -37,6 +37,7 @@ val shortcuts: List<Shortcut> = listOf(
         it.start(Intent.makeMainSelectorActivity(Intent.ACTION_MAIN, Intent.CATEGORY_APP_MAPS))
     },
     Shortcut("chrome", R.drawable.ic_web, R.string.sc_chrome) { it.startPackage("com.android.chrome") },
+    Shortcut("spotify", R.drawable.ic_music, R.string.sc_spotify) { it.startPackage("com.spotify.music") },
 )
 
 /** Affiché dans le coin en bas à droite. */
@@ -66,16 +67,15 @@ fun openUrl(context: Context, url: String) {
 private const val PKG_GEMINI = "com.google.android.apps.bard"
 
 /**
- * Lance Gemini : d'abord sa commande vocale (micro ouvert), sinon l'appli Gemini,
- * sinon l'assistant vocal par défaut du téléphone.
+ * Lance Gemini directement : l'appli Gemini d'abord ; à défaut l'assistant du téléphone
+ * (touche « assistant »), puis le site gemini.google.com.
  */
 fun openGemini(context: Context) {
     val pm = context.packageManager
-    val voice = Intent(Intent.ACTION_VOICE_COMMAND).setPackage(PKG_GEMINI)
-    val launch = pm.getLaunchIntentForPackage(PKG_GEMINI)
+    val app = pm.getLaunchIntentForPackage(PKG_GEMINI)
     when {
-        voice.resolveActivity(pm) != null -> context.start(voice)
-        launch != null -> context.start(launch)
-        else -> context.start(Intent(Intent.ACTION_VOICE_COMMAND))
+        app != null -> context.start(app)
+        Intent(Intent.ACTION_ASSIST).resolveActivity(pm) != null -> context.start(Intent(Intent.ACTION_ASSIST))
+        else -> openUrl(context, "https://gemini.google.com/app")
     }
 }

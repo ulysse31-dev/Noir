@@ -130,6 +130,21 @@ object NoirType {
         lineHeight = 26.sp,
         color = NoirColors.White,
     )
+    val Poem = TextStyle(
+        fontFamily = NoirFont,
+        fontWeight = FontWeight.Light,
+        fontSize = 22.sp,
+        lineHeight = 34.sp,
+        color = NoirColors.White,
+    )
+    val PoemTitle = TextStyle(
+        fontFamily = NoirFont,
+        fontWeight = FontWeight.Light,
+        fontSize = 30.sp,
+        lineHeight = 36.sp,
+        letterSpacing = (-0.5).sp,
+        color = NoirColors.White,
+    )
     val Chip = TextStyle(
         fontFamily = NoirFont,
         fontWeight = FontWeight.Normal,

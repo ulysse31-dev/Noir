@@ -210,14 +210,14 @@ private fun HomeContent(next24: List<HourPoint>, resumeTick: Int, playKey: Int) 
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .fillMaxWidth()
-                .padding(start = 14.dp, end = 14.dp, bottom = 16.dp),
+                .padding(start = 17.dp, end = 17.dp, bottom = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             (shortcuts + cameraShortcut).forEachIndexed { i, s ->
                 Box(
                     Modifier
-                        .size(56.dp)
+                        .size(48.dp)
                         .popIn(delayMillis = 500 + i * 60, key = playKey)
                         .springTappable { s.launch(context) },
                     contentAlignment = Alignment.Center,
@@ -225,7 +225,7 @@ private fun HomeContent(next24: List<HourPoint>, resumeTick: Int, playKey: Int) 
                     Image(
                         painter = painterResource(s.icon),
                         contentDescription = stringResource(s.label),
-                        modifier = Modifier.size(28.dp),
+                        modifier = Modifier.size(26.dp),
                     )
                 }
             }
