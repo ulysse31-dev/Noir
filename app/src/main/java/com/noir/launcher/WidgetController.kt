@@ -47,6 +47,21 @@ class WidgetController(context: Context) {
         return calendar.ifEmpty { all }
     }
 
+    /**
+     * Le widget « jour » de Google Agenda (vue journalière), à défaut la liste « agenda »,
+     * à défaut rien (le choix est alors proposé à la main).
+     */
+    fun preferred(list: List<AppWidgetProviderInfo>): AppWidgetProviderInfo? {
+        fun label(i: AppWidgetProviderInfo) =
+            runCatching { i.loadLabel(appContext.packageManager) }.getOrDefault("").lowercase()
+        fun name(i: AppWidgetProviderInfo) = i.provider.className.lowercase()
+        val day = Regex("(^|[^a-zé])(jour|day|journée)([^a-zé]|$)")
+        return list.firstOrNull { day.containsMatchIn(label(it)) }
+            ?: list.firstOrNull { name(it).contains("day") }
+            ?: list.firstOrNull { label(it).let { l -> l.contains("agenda") || l.contains("schedule") } }
+            ?: list.firstOrNull()
+    }
+
     companion object {
         const val HOST_ID = 1024
         const val REQUEST_CONFIGURE = 4242

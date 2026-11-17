@@ -48,7 +48,7 @@ private data class PendingWidget(val id: Int, val info: AppWidgetProviderInfo)
 
 /**
  * Page de droite : le widget Google Agenda, affiché en plein écran.
- * Au premier passage, on choisit le widget dans la liste (avec aperçu).
+ * Au premier passage, le widget « jour » est choisi automatiquement ; « Changer de widget » ouvre la liste (avec aperçu).
  */
 @Composable
 fun WidgetPage(
@@ -59,6 +59,8 @@ fun WidgetPage(
     var providers by remember { mutableStateOf<List<AppWidgetProviderInfo>>(emptyList()) }
     var loaded by remember { mutableStateOf(false) }
     var pending by remember { mutableStateOf<PendingWidget?>(null) }
+    // Premier passage : on choisit tout seul le widget « jour » (le choix manuel reste dans « Changer de widget »).
+    var auto by remember { mutableStateOf(true) }
 
     fun finish(id: Int) {
         controller.widgetId = id
@@ -106,6 +108,9 @@ fun WidgetPage(
         if (widgetId == -1) {
             providers = withContext(Dispatchers.Default) { controller.providers() }
             loaded = true
+            val choice = if (auto) controller.preferred(providers) else null
+            if (choice != null) pick(choice)
+            auto = false
         }
     }
 
@@ -114,7 +119,9 @@ fun WidgetPage(
             .fillMaxSize()
             .background(NoirColors.Black),
     ) {
-        if (widgetId == -1) {
+        if (widgetId == -1 && auto) {
+            // Sélection automatique en cours : rien à afficher.
+        } else if (widgetId == -1) {
             Picker(
                 providers = providers,
                 loaded = loaded,
@@ -149,6 +156,7 @@ fun WidgetPage(
                             modifier = Modifier
                                 .align(Alignment.BottomStart)
                                 .tappable {
+                                    auto = false
                                     controller.clear()
                                     widgetId = -1
                                 }

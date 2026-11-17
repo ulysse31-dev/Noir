@@ -6,6 +6,8 @@ Lanceur Android minimaliste : fond noir pur, recherche d'applis (texte seul), he
 
 L'APK est compilé par GitHub : télécharger `Noir.apk` dans les Releases du dépôt, l'installer, puis choisir **Noir** comme application d'accueil (« Toujours »).
 
+L'APK est signé avec une clé fixe (`app/noir.keystore`) et son numéro de version monte à chaque compilation : les mises à jour s'installent par-dessus la version précédente, sans désinstaller. Seule la première installation d'une version issue d'avant cette clé demande de désinstaller l'ancienne. Cette clé est publique dans le dépôt : elle sert à la mise à jour, pas à la sécurité.
+
 ## Comportement
 
 - Accueil : clavier fermé (toucher la barre de recherche pour l'ouvrir) ; recherche vide = heure + date.
@@ -15,7 +17,7 @@ L'APK est compilé par GitHub : télécharger `Noir.apk` dans les Releases du d�
 - Touche Accueil : retour à l'accueil, recherche vidée, clavier refermé.
 - Page de gauche (glisser vers la droite) : Lire, entièrement branchée sur Wikipédia en français. L'article du jour, puis au choix « Ce jour-là » (événements de la date), « Plus lus », et des thèmes (Marseille, Photo, Web, IA) dont les articles changent chaque jour. Toucher ouvre l'article. Actualisé au plus toutes les 6 heures.
 - Animations : ressort à l'appui sur les icônes, entrée décalée des raccourcis et des résultats, tracé de la courbe météo, pages voisines qui reculent pendant le glissement. Les pulsations (deux-points, anneau « maintenant ») s'arrêtent après quelques secondes pour ménager la batterie.
-- Page de droite (glisser vers la gauche) : au premier passage, choisir un widget Google Agenda dans la liste et accepter la demande d'Android. « Changer de widget » en bas à gauche permet d'en choisir un autre.
+- Page de droite (glisser vers la gauche) : le widget Google Agenda « jour » est choisi automatiquement (accepter la demande d'Android au premier passage) et occupe tout l'écran. À défaut de widget « jour », la liste « agenda » est prise. « Changer de widget » en bas à gauche ouvre la liste pour en choisir un autre.
 
 ## Réglages (dans le code)
 

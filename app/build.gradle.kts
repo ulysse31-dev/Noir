@@ -12,8 +12,26 @@ android {
         applicationId = "com.noir.launcher"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "0.1"
+        // Le numéro de version monte à chaque compilation GitHub : Android accepte la mise à jour par-dessus.
+        versionCode = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 1
+        versionName = "0.2"
+    }
+
+    // Clé de signature fixe : sans elle, chaque compilation aurait une signature différente
+    // et Android refuserait de mettre à jour l'appli (il faudrait la désinstaller).
+    signingConfigs {
+        create("noir") {
+            storeFile = file("noir.keystore")
+            storePassword = "noirnoir"
+            keyAlias = "noir"
+            keyPassword = "noirnoir"
+        }
+    }
+
+    buildTypes {
+        getByName("debug") {
+            signingConfig = signingConfigs.getByName("noir")
+        }
     }
 
     compileOptions {
