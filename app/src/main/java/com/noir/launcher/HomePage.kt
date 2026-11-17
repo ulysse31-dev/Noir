@@ -173,7 +173,7 @@ fun HomePage(
             onQueryChange = onQueryChange,
             onClaude = { askClaude(context, query) },
             onGoogle = { searchGoogle(context, query) },
-            onMic = { openGemini(context) },
+            onMic = { openGeminiVoice(context) },
             onGo = {
                 val q = query.trim()
                 val ask = q.startsWith("?") || q.endsWith("?")

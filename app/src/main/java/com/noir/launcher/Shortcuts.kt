@@ -127,3 +127,28 @@ fun toggleGrayscale(context: Context) {
     }.isSuccess
     if (!opened) context.start(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
 }
+
+private const val ACTION_VOICE_ASSIST = "android.intent.action.VOICE_ASSIST"
+
+/**
+ * Micro : lance l'assistant en mode écoute (reconnaissance vocale directe) plutôt que d'ouvrir
+ * simplement l'appli Gemini. On essaie les points d'entrée « voix » d'Android, du plus précis au plus
+ * général ; le premier qui répond gagne, et l'ouverture classique de Gemini reste le dernier recours.
+ */
+fun openGeminiVoice(context: Context) {
+    val attempts = listOf(
+        Intent(Intent.ACTION_VOICE_COMMAND).setPackage(PKG_GEMINI),
+        Intent(Intent.ACTION_VOICE_COMMAND).setPackage("com.google.android.googlequicksearchbox"),
+        Intent(ACTION_VOICE_ASSIST).setPackage("com.google.android.googlequicksearchbox"),
+        Intent(ACTION_VOICE_ASSIST).setPackage(PKG_GEMINI),
+        Intent(Intent.ACTION_VOICE_COMMAND),
+        Intent(ACTION_VOICE_ASSIST),
+    )
+    for (intent in attempts) {
+        val ok = runCatching {
+            context.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        }.isSuccess
+        if (ok) return
+    }
+    openGemini(context)
+}
