@@ -62,3 +62,20 @@ fun searchGoogle(context: Context, query: String) {
 fun openUrl(context: Context, url: String) {
     context.start(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
 }
+
+private const val PKG_GEMINI = "com.google.android.apps.bard"
+
+/**
+ * Lance Gemini : d'abord sa commande vocale (micro ouvert), sinon l'appli Gemini,
+ * sinon l'assistant vocal par défaut du téléphone.
+ */
+fun openGemini(context: Context) {
+    val pm = context.packageManager
+    val voice = Intent(Intent.ACTION_VOICE_COMMAND).setPackage(PKG_GEMINI)
+    val launch = pm.getLaunchIntentForPackage(PKG_GEMINI)
+    when {
+        voice.resolveActivity(pm) != null -> context.start(voice)
+        launch != null -> context.start(launch)
+        else -> context.start(Intent(Intent.ACTION_VOICE_COMMAND))
+    }
+}

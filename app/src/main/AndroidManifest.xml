@@ -7,6 +7,7 @@
     <!-- Nécessaire (Android 11+) pour lister les applis lançables et les widgets installés -->
     <queries>
         <package android:name="com.anthropic.claude" />
+        <package android:name="com.google.android.apps.bard" />
         <package android:name="com.google.android.googlequicksearchbox" />
         <intent>
             <action android:name="android.intent.action.MAIN" />

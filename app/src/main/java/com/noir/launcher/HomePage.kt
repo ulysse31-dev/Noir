@@ -173,6 +173,7 @@ fun HomePage(
             onQueryChange = onQueryChange,
             onClaude = { askClaude(context, query) },
             onGoogle = { searchGoogle(context, query) },
+            onMic = { openGemini(context) },
             onGo = {
                 val q = query.trim()
                 val ask = q.startsWith("?") || q.endsWith("?")
@@ -285,6 +286,7 @@ private fun SearchField(
     onQueryChange: (String) -> Unit,
     onClaude: () -> Unit,
     onGoogle: () -> Unit,
+    onMic: () -> Unit,
     onGo: () -> Unit,
     focusRequester: FocusRequester,
 ) {
@@ -341,6 +343,16 @@ private fun SearchField(
                     onClick = onGoogle,
                 )
                 Spacer(Modifier.size(12.dp))
+            } else {
+                // Champ vide : le micro lance Gemini.
+                SearchIcon(
+                    packageName = null,
+                    fallback = R.drawable.ic_mic,
+                    label = stringResource(R.string.ask_gemini),
+                    delayMillis = 0,
+                    onClick = onMic,
+                )
+                Spacer(Modifier.size(12.dp))
             }
         }
     }
@@ -352,7 +364,7 @@ private fun SearchField(
  */
 @Composable
 private fun SearchIcon(
-    packageName: String,
+    packageName: String?,
     @DrawableRes fallback: Int,
     label: String,
     delayMillis: Int,
@@ -360,7 +372,7 @@ private fun SearchIcon(
 ) {
     val context = LocalContext.current
     val bitmap: ImageBitmap? = remember(packageName) {
-        runCatching {
+        if (packageName == null) null else runCatching {
             context.packageManager.getApplicationIcon(packageName).toBitmap(96, 96).asImageBitmap()
         }.getOrNull()
     }

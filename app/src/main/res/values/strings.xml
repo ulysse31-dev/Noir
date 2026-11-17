@@ -13,6 +13,7 @@
     <string name="sc_camera">Photo</string>
     <string name="ask_claude">Demander à Claude</string>
     <string name="search_google">Chercher sur Google</string>
+    <string name="ask_gemini">Parler à Gemini</string>
     <string name="weather_now">Maint.</string>
     <string name="read_title">Lire</string>
     <string name="read_subtitle">Pour les pauses.</string>

@@ -35,34 +35,31 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 /**
- * Page à gauche de l'accueil : pour les pauses. L'article du jour de Wikipédia, puis des articles
- * par thème (WordPress, Marseille, Photo, IA). Toucher ouvre le lien dans le navigateur.
+ * Page à gauche de l'accueil : pour les pauses, tout vient de Wikipédia. L'article du jour, puis
+ * ce jour-là, les plus lus et des thèmes (Marseille, Photo, Web, IA). Toucher ouvre l'article.
  */
 @Composable
 fun LirePage(active: Boolean, resumeTick: Int) {
     val context = LocalContext.current
-    var articles by remember { mutableStateOf(cachedFeed(context)) }
-    var fact by remember { mutableStateOf(cachedFact(context)) }
-    var topic by rememberSaveable { mutableStateOf<String?>(null) }
+    var wiki by remember { mutableStateOf(cachedWiki(context)) }
+    var section by rememberSaveable { mutableStateOf(SECTIONS.first()) }
     var attempted by remember { mutableStateOf(false) }
     var plays by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(active, resumeTick) {
         if (active) {
             plays++
-            loadFact(context)?.let { fact = it }
-            loadFeed(context)?.let { articles = it }
+            loadWiki(context)?.let { wiki = it }
             attempted = true
         }
     }
 
-    val shown = remember(articles, topic) {
-        val list = articles.filter { topic == null || it.topic == topic }
-        if (topic == null) list.sortedByDescending { it.time }.take(24) else list
-    }
-    val animKey = topic to plays
+    val fact = wiki?.fact
+    val shown = remember(wiki, section) { wiki?.items.orEmpty().filter { it.section == section } }
+    val animKey = section to plays
 
     Column(
         Modifier
@@ -104,7 +101,9 @@ fun LirePage(active: Boolean, resumeTick: Int) {
                             style = NoirType.DayHeader,
                         )
                         Spacer(Modifier.height(12.dp))
-                        BasicText(text = f.text, style = NoirType.Featured)
+                        BasicText(text = f.title, style = NoirType.Featured)
+                        Spacer(Modifier.height(8.dp))
+                        BasicText(text = f.text, style = NoirType.Body)
                         Spacer(Modifier.height(28.dp))
                         Divider()
                     }
@@ -118,8 +117,7 @@ fun LirePage(active: Boolean, resumeTick: Int) {
                         .horizontalScroll(rememberScrollState())
                         .riseIn(delayMillis = 160, key = plays),
                 ) {
-                    Chip(stringResource(R.string.read_all), topic == null) { topic = null }
-                    TOPICS.forEach { t -> Chip(t, topic == t) { topic = t } }
+                    SECTIONS.forEach { sec -> Chip(sec, section == sec) { section = sec } }
                 }
             }
 
@@ -183,11 +181,7 @@ private fun Chip(label: String, selected: Boolean, onClick: () -> Unit) {
 }
 
 @Composable
-private fun ArticleRow(a: Article, delayMillis: Int, animKey: Any, onClick: () -> Unit) {
-    val meta = listOf(a.topic, a.source, ago(a.time))
-        .filter { it.isNotBlank() }
-        .joinToString(" · ")
-        .uppercase()
+private fun ArticleRow(a: WikiItem, delayMillis: Int, animKey: Any, onClick: () -> Unit) {
     Column(
         Modifier
             .fillMaxWidth()
@@ -196,31 +190,31 @@ private fun ArticleRow(a: Article, delayMillis: Int, animKey: Any, onClick: () -
             .padding(horizontal = 28.dp),
     ) {
         Column(Modifier.padding(vertical = 16.dp)) {
-            BasicText(
-                text = meta,
-                style = NoirType.DayHeader,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-            Spacer(Modifier.height(6.dp))
+            if (a.meta.isNotBlank()) {
+                BasicText(
+                    text = a.meta.uppercase(),
+                    style = NoirType.DayHeader,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Spacer(Modifier.height(6.dp))
+            }
             BasicText(
                 text = a.title,
                 style = NoirType.ArticleTitle,
-                maxLines = 3,
+                maxLines = 4,
                 overflow = TextOverflow.Ellipsis,
             )
+            if (a.text.isNotBlank()) {
+                Spacer(Modifier.height(4.dp))
+                BasicText(
+                    text = a.text,
+                    style = NoirType.Body.copy(fontSize = 15.sp),
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
         }
         Divider()
-    }
-}
-
-private fun ago(time: Long): String {
-    if (time <= 0L) return ""
-    val minutes = (System.currentTimeMillis() - time) / 60_000L
-    return when {
-        minutes < 1 -> "à l'instant"
-        minutes < 60 -> "il y a $minutes min"
-        minutes < 60 * 24 -> "il y a ${minutes / 60} h"
-        else -> "il y a ${minutes / (60 * 24)} j"
     }
 }
