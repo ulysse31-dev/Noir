@@ -32,14 +32,14 @@ object NoirType {
     val Clock = TextStyle(
         fontFamily = NoirFont,
         fontWeight = FontWeight.Thin,
-        fontSize = 96.sp,
-        letterSpacing = (-2).sp,
+        fontSize = 92.sp,
+        letterSpacing = (-3).sp,
         color = NoirColors.White,
     )
     val Date = TextStyle(
         fontFamily = NoirFont,
         fontWeight = FontWeight.Light,
-        fontSize = 18.sp,
+        fontSize = 17.sp,
         color = NoirColors.Muted,
     )
     val Search = TextStyle(
@@ -52,7 +52,7 @@ object NoirType {
         fontFamily = NoirFont,
         fontWeight = FontWeight.Light,
         fontSize = 22.sp,
-        color = NoirColors.Dim,
+        color = NoirColors.Muted,
     )
     val Result = TextStyle(
         fontFamily = NoirFont,
@@ -83,7 +83,7 @@ object NoirType {
         fontFamily = NoirFont,
         fontWeight = FontWeight.Light,
         fontSize = 14.sp,
-        color = NoirColors.Dim,
+        color = NoirColors.Muted,
     )
     val Body = TextStyle(
         fontFamily = NoirFont,
@@ -100,7 +100,7 @@ object NoirType {
     val WeatherSummary = TextStyle(
         fontFamily = NoirFont,
         fontWeight = FontWeight.Light,
-        fontSize = 18.sp,
+        fontSize = 17.sp,
         color = NoirColors.White,
     )
     val Legend = TextStyle(
@@ -108,6 +108,33 @@ object NoirType {
         fontWeight = FontWeight.Normal,
         fontSize = 11.sp,
         color = NoirColors.Dim,
+    )
+    val Title = TextStyle(
+        fontFamily = NoirFont,
+        fontWeight = FontWeight.Light,
+        fontSize = 36.sp,
+        letterSpacing = (-0.5).sp,
+        color = NoirColors.White,
+    )
+    val Featured = TextStyle(
+        fontFamily = NoirFont,
+        fontWeight = FontWeight.Light,
+        fontSize = 22.sp,
+        lineHeight = 30.sp,
+        color = NoirColors.White,
+    )
+    val ArticleTitle = TextStyle(
+        fontFamily = NoirFont,
+        fontWeight = FontWeight.Normal,
+        fontSize = 19.sp,
+        lineHeight = 26.sp,
+        color = NoirColors.White,
+    )
+    val Chip = TextStyle(
+        fontFamily = NoirFont,
+        fontWeight = FontWeight.Normal,
+        fontSize = 15.sp,
+        color = NoirColors.Muted,
     )
     val Action = TextStyle(
         fontFamily = NoirFont,

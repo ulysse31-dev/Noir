@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Météo (Open-Meteo) -->
+    <!-- Météo (Open-Meteo), lecture (flux RSS, Wikipédia) -->
     <uses-permission android:name="android.permission.INTERNET" />
 
     <!-- Nécessaire (Android 11+) pour lister les applis lançables et les widgets installés -->
     <queries>
+        <package android:name="com.anthropic.claude" />
+        <package android:name="com.google.android.googlequicksearchbox" />
         <intent>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />

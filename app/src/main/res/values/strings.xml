@@ -13,4 +13,11 @@
     <string name="sc_camera">Photo</string>
     <string name="ask_claude">Demander à Claude</string>
     <string name="search_google">Chercher sur Google</string>
+    <string name="weather_now">Maint.</string>
+    <string name="read_title">Lire</string>
+    <string name="read_subtitle">Pour les pauses.</string>
+    <string name="read_all">Tout</string>
+    <string name="read_featured">À la une · Wikipédia</string>
+    <string name="read_loading">Chargement…</string>
+    <string name="read_empty">Rien à lire pour l\'instant. Vérifie ta connexion.</string>
 </resources>

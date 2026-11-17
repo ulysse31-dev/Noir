@@ -2,6 +2,7 @@ package com.noir.launcher
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -14,10 +15,15 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+
+/** Pages, de gauche à droite : Lire, Accueil, Agenda (widget). */
+private const val LIRE_PAGE = 0
+private const val HOME_PAGE = 1
 
 @Composable
 fun NoirApp(
@@ -27,7 +33,7 @@ fun NoirApp(
     configureWidget: (Int, (Boolean) -> Unit) -> Unit,
 ) {
     val context = LocalContext.current
-    val pagerState = rememberPagerState(pageCount = { 2 })
+    val pagerState = rememberPagerState(initialPage = HOME_PAGE, pageCount = { 3 })
     val scope = rememberCoroutineScope()
 
     var query by rememberSaveable { mutableStateOf("") }
@@ -36,7 +42,7 @@ fun NoirApp(
     // Retour à l'accueil (touche Accueil) : recherche vidée, page d'accueil.
     LaunchedEffect(resetTick) {
         query = ""
-        if (pagerState.currentPage != 0) pagerState.scrollToPage(0)
+        if (pagerState.currentPage != HOME_PAGE) pagerState.scrollToPage(HOME_PAGE)
     }
 
     // Liste des applis rechargée à chaque retour au premier plan (installations/désinstallations).
@@ -45,9 +51,9 @@ fun NoirApp(
     }
 
     // Actif seulement si utile, pour ne pas gêner la fermeture du clavier par « retour ».
-    BackHandler(enabled = pagerState.currentPage != 0 || query.isNotEmpty()) {
-        if (pagerState.currentPage != 0) {
-            scope.launch { pagerState.animateScrollToPage(0) }
+    BackHandler(enabled = pagerState.currentPage != HOME_PAGE || query.isNotEmpty()) {
+        if (pagerState.currentPage != HOME_PAGE) {
+            scope.launch { pagerState.animateScrollToPage(HOME_PAGE) }
         } else {
             query = ""
         }
@@ -60,17 +66,35 @@ fun NoirApp(
             .fillMaxSize()
             .background(NoirColors.Black),
     ) { page ->
-        if (page == 0) {
-            HomePage(
-                query = query,
-                onQueryChange = { query = it },
-                apps = apps,
-                active = pagerState.currentPage == 0,
-                resetTick = resetTick,
-                resumeTick = resumeTick,
-            )
-        } else {
-            WidgetPage(controller = widgets, configure = configureWidget)
+        // Les pages voisines reculent légèrement (échelle + opacité) pendant le glissement.
+        Box(
+            Modifier
+                .fillMaxSize()
+                .graphicsLayer {
+                    val distance = kotlin.math.abs(
+                        pagerState.currentPage - page + pagerState.currentPageOffsetFraction,
+                    ).coerceIn(0f, 1f)
+                    val scale = 1f - 0.08f * distance
+                    scaleX = scale
+                    scaleY = scale
+                    alpha = 1f - 0.7f * distance
+                },
+        ) {
+            when (page) {
+                LIRE_PAGE -> LirePage(
+                    active = pagerState.currentPage == LIRE_PAGE,
+                    resumeTick = resumeTick,
+                )
+                HOME_PAGE -> HomePage(
+                    query = query,
+                    onQueryChange = { query = it },
+                    apps = apps,
+                    active = pagerState.currentPage == HOME_PAGE,
+                    resetTick = resetTick,
+                    resumeTick = resumeTick,
+                )
+                else -> WidgetPage(controller = widgets, configure = configureWidget)
+            }
         }
     }
 }

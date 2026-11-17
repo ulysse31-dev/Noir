@@ -57,3 +57,8 @@ fun searchGoogle(context: Context, query: String) {
     if (q.isEmpty()) return
     context.start(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/search?q=" + Uri.encode(q))))
 }
+
+/** Ouvre un lien dans le navigateur (ou l'appli qui le gère). */
+fun openUrl(context: Context, url: String) {
+    context.start(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+}
