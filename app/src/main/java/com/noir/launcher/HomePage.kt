@@ -173,7 +173,6 @@ fun HomePage(
             onQueryChange = onQueryChange,
             onClaude = { askClaude(context, query) },
             onGoogle = { searchGoogle(context, query) },
-            onMic = { openGeminiVoice(context) },
             onGo = {
                 val q = query.trim()
                 val ask = q.startsWith("?") || q.endsWith("?")
@@ -203,24 +202,6 @@ private fun HomeContent(next24: List<HourPoint>, resumeTick: Int, playKey: Int) 
                 Spacer(Modifier.height(48.dp))
                 WeatherBlock(next24, playKey)
             }
-        }
-
-        // Petit picto en haut à droite : écran du téléphone en noir et blanc.
-        Box(
-            Modifier
-                .align(Alignment.TopEnd)
-                .padding(top = 12.dp, end = 17.dp)
-                .size(48.dp)
-                .popIn(delayMillis = 400, key = playKey)
-                .springTappable { toggleGrayscale(context) },
-            contentAlignment = Alignment.Center,
-        ) {
-            Image(
-                painter = painterResource(R.drawable.ic_contrast),
-                contentDescription = stringResource(R.string.cd_grayscale),
-                colorFilter = ColorFilter.tint(NoirColors.Muted),
-                modifier = Modifier.size(22.dp),
-            )
         }
 
         // Pictos seuls, alignés sur une ligne ; l'appareil photo est le dernier, dans le coin à droite.
@@ -305,7 +286,6 @@ private fun SearchField(
     onQueryChange: (String) -> Unit,
     onClaude: () -> Unit,
     onGoogle: () -> Unit,
-    onMic: () -> Unit,
     onGo: () -> Unit,
     focusRequester: FocusRequester,
 ) {
@@ -360,16 +340,6 @@ private fun SearchField(
                     label = stringResource(R.string.search_google),
                     delayMillis = 70,
                     onClick = onGoogle,
-                )
-                Spacer(Modifier.size(12.dp))
-            } else {
-                // Champ vide : le micro lance Gemini.
-                SearchIcon(
-                    packageName = null,
-                    fallback = R.drawable.ic_mic,
-                    label = stringResource(R.string.ask_gemini),
-                    delayMillis = 0,
-                    onClick = onMic,
                 )
                 Spacer(Modifier.size(12.dp))
             }

@@ -48,7 +48,7 @@ private sealed interface PoemUi {
  * ne voyant que les initiales), puis on le coche : il passe dans les appris et le suivant arrive.
  */
 @Composable
-fun LirePage(active: Boolean, resumeTick: Int) {
+private fun PoemPane(active: Boolean, resumeTick: Int) {
     val context = LocalContext.current
     val store = remember { PoemStore(context) }
 
@@ -109,14 +109,12 @@ fun LirePage(active: Boolean, resumeTick: Int) {
     Column(
         Modifier
             .fillMaxSize()
-            .background(NoirColors.Black)
-            .statusBarsPadding()
-            .navigationBarsPadding(),
+            .background(NoirColors.Black),
     ) {
         val current = index
         if (current == null && !store.allLearned()) {
             // Il reste des poèmes à apprendre, mais aucun n'a pu être chargé : ce n'est pas « tout appris ».
-            Column(Modifier.padding(top = 64.dp)) {
+            Column(Modifier.padding(top = 24.dp)) {
                 Message(stringResource(R.string.poem_offline), stringResource(R.string.poem_retry)) {
                     store.clearSkipped()
                     index = store.current()
@@ -149,7 +147,7 @@ fun LirePage(active: Boolean, resumeTick: Int) {
         val ref = POEMS[current]
         val animKey = current to active
 
-        Column(Modifier.padding(start = 28.dp, end = 28.dp, top = 64.dp)) {
+        Column(Modifier.padding(start = 28.dp, end = 28.dp, top = 24.dp)) {
             BasicText(
                 text = stringResource(R.string.read_progress, learnedCount, learnedCount + store.remaining()).uppercase(),
                 style = NoirType.DayHeader,
@@ -309,3 +307,40 @@ private fun toInitials(text: String): String =
         val w = m.value
         if (w.length > 1) w.substring(0, 1) + "…" else w
     }
+
+/** Page à gauche de l'accueil : un poème à apprendre ou une grille de sudoku, au choix. */
+@Composable
+fun LirePage(active: Boolean, resumeTick: Int) {
+    val context = LocalContext.current
+    val prefs = remember { context.getSharedPreferences("noir", android.content.Context.MODE_PRIVATE) }
+    var mode by remember { mutableIntStateOf(prefs.getInt("lire_mode", 0)) }
+
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(NoirColors.Black)
+            .statusBarsPadding()
+            .navigationBarsPadding(),
+    ) {
+        Row(
+            Modifier.padding(start = 20.dp, top = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            listOf(R.string.tab_poem, R.string.tab_sudoku).forEachIndexed { i, label ->
+                BasicText(
+                    text = stringResource(label).uppercase(),
+                    style = NoirType.DayHeader.copy(color = if (mode == i) NoirColors.White else NoirColors.Muted),
+                    modifier = Modifier
+                        .tappable {
+                            mode = i
+                            prefs.edit().putInt("lire_mode", i).apply()
+                        }
+                        .padding(8.dp),
+                )
+            }
+        }
+        Box(Modifier.weight(1f).fillMaxWidth()) {
+            if (mode == 0) PoemPane(active, resumeTick) else SudokuPane(active)
+        }
+    }
+}

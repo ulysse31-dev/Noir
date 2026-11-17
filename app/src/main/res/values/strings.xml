@@ -14,7 +14,6 @@
     <string name="sc_camera">Photo</string>
     <string name="ask_claude">Demander à Claude</string>
     <string name="search_google">Chercher sur Google</string>
-    <string name="ask_gemini">Parler à Gemini</string>
     <string name="weather_now">Maint.</string>
     <string name="read_progress">%1$d / %2$d apprises</string>
     <string name="poem_loading">Chargement du poème…</string>
@@ -26,6 +25,14 @@
     <string name="cd_skip">Passer au poème suivant</string>
     <string name="cd_hide">Masquer le texte : initiales seulement</string>
     <string name="cd_show">Afficher le texte entier</string>
-    <string name="cd_grayscale">Passer l\'écran en noir et blanc</string>
-    <string name="grayscale_hint">Autorisation requise pour basculer d\'un tap — voir le README. Réglages ouverts.</string>
+    <string name="tab_poem">Poème</string>
+    <string name="tab_sudoku">Sudoku</string>
+    <string name="sd_easy">Facile</string>
+    <string name="sd_medium">Moyen</string>
+    <string name="sd_hard">Difficile</string>
+    <string name="sd_loading">Création de la grille…</string>
+    <string name="sd_done">Grille terminée</string>
+    <string name="sd_level">Niveau</string>
+    <string name="sd_erase">Effacer</string>
+    <string name="sd_new">Nouvelle grille</string>
 </resources>

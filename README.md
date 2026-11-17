@@ -13,7 +13,7 @@ L'APK est signé avec une clé fixe (`app/noir.keystore`) et son numéro de vers
 - Accueil : clavier fermé (toucher la barre de recherche pour l'ouvrir) ; recherche vide = heure + date.
 - Résultats : le meilleur est le plus proche du champ. Toucher = lancer, appui long = infos de l'appli (désinstaller), touche « Go » du clavier = lancer le premier résultat.
 - Accueil, recherche vide : heure, météo des 24 prochaines heures (Allauch, via Open-Meteo : courbe de température, barres de pluie, heures ; défile à l'horizontale ; la courbe se dessine à chaque arrivée sur l'accueil), raccourcis WhatsApp / Messages / Téléphone / Maps / Chrome / Spotify en pictos blancs alignés sur une ligne (sans texte), l'appareil photo à l'extrémité droite. Le clavier ouvert ne garde que l'heure. Toucher l'heure ouvre l'appli Horloge de Google.
-- Recherche : dès qu'on tape, un micro est à droite du champ vide : il lance l'assistant en mode écoute (commande vocale Android, via Gemini ou l'appli Google ; à défaut, ouverture de l'appli Gemini, de l'assistant du téléphone, puis gemini.google.com). Dès qu'on tape, il laisse la place à deux icônes grises : Claude (claude.ai, question pré-remplie) et Google. Ce sont les icônes réelles des applis installées, passées en niveaux de gris (pictogramme blanc neutre si l'appli est absente). Touche « Go » : Claude si la saisie commence ou finit par « ? », Google s'il n'y a aucun résultat d'appli, sinon le premier résultat.
+- Recherche : dès qu'on tape, deux icônes grises apparaissent à droite du champ : Claude (claude.ai, question pré-remplie) et Google. Ce sont les icônes réelles des applis installées, passées en niveaux de gris (pictogramme blanc neutre si l'appli est absente). Touche « Go » : Claude si la saisie commence ou finit par « ? », Google s'il n'y a aucun résultat d'appli, sinon le premier résultat.
 - Touche Accueil : retour à l'accueil, recherche vidée, clavier refermé.
 - Page de gauche (glisser vers la droite) : Lire = un poème à apprendre. Un poème à la fois, en grand : l'œil barré affiche seulement les initiales pour réciter, la flèche passe au suivant, le rond blanc coché marque le poème comme appris et amène le suivant. La progression (« 3 / 19 apprises ») et les textes déjà chargés restent sur le téléphone. Les textes viennent de Wikisource (domaine public), seuls le titre et l'auteur sont dans le code : `POEMS` (Poems.kt).
 - Animations : ressort à l'appui sur les icônes, entrée décalée des raccourcis et des résultats, tracé de la courbe météo, pages voisines qui reculent pendant le glissement. Les pulsations (deux-points, anneau « maintenant ») s'arrêtent après quelques secondes pour ménager la batterie.
@@ -30,17 +30,13 @@ L'APK est signé avec une clé fixe (`app/noir.keystore`) et son numéro de vers
 
 Pictos : Material Symbols (Google), licence Apache 2.0.
 
-## Noir et blanc (bouton en haut à droite de l'accueil)
-
-Le picto « contraste » bascule l'écran du téléphone en niveaux de gris (filtre Android « monochromie »).
-Pour que ça marche d'un tap, une autorisation à donner **une seule fois** (depuis un ordinateur ou une appli adb sur le téléphone, ex. LADB) :
-
-    adb shell pm grant com.noir.launcher android.permission.WRITE_SECURE_SETTINGS
-
-Sans cette autorisation, le bouton ouvre les réglages d'accessibilité. Sur un Galaxy, le noir et blanc existe aussi dans
-Réglages > Bien-être numérique > Mode Coucher (« Échelle de gris »), ou via Options pour les développeurs > « Simuler un espace colorimétrique » > Monochromie.
-
 ## Poèmes : en cas de souci
 
 Un poème qui ne se charge pas n'est jamais retiré pour de bon : il est simplement écarté jusqu'à la prochaine ouverture.
 Si aucun ne se charge, la page affiche « Réessayer » et, en petit, la cause (nombre de résultats, pages lues…).
+
+## Page de gauche : poème ou sudoku
+
+Deux onglets en haut (Poème / Sudoku), le choix est mémorisé. Le sudoku est généré sur le téléphone (aucun réseau, solution unique) :
+3 niveaux (Facile 40 indices, Moyen 32, Difficile 26 ; « Niveau » change de niveau et crée une grille), « Nouvelle grille », « Effacer ».
+Chiffres de départ en blanc, tes chiffres en bleu, doublons en rouge. La grille en cours est sauvegardée à chaque case.
