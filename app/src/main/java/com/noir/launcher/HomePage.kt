@@ -262,7 +262,8 @@ private fun ClockBlock(resumeTick: Int, playKey: Int, modifier: Modifier) {
         now.format(dateFormat).replaceFirstChar { it.titlecase(Locale.getDefault()) }
     }
 
-    Column(modifier) {
+    // Toucher l'heure ouvre l'appli Horloge.
+    Column(modifier.tappable { openClock(context) }) {
         BasicText(
             text = buildAnnotatedString {
                 append(now.format(hourFormat))

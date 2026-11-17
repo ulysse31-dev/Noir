@@ -3,6 +3,7 @@ package com.noir.launcher
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.provider.AlarmClock
 import android.provider.MediaStore
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -78,4 +79,12 @@ fun openGemini(context: Context) {
         Intent(Intent.ACTION_ASSIST).resolveActivity(pm) != null -> context.start(Intent(Intent.ACTION_ASSIST))
         else -> openUrl(context, "https://gemini.google.com/app")
     }
+}
+
+private const val PKG_CLOCK = "com.google.android.deskclock"
+
+/** Ouvre l'appli Horloge de Google ; à défaut, l'horloge par défaut du téléphone. */
+fun openClock(context: Context) {
+    val app = context.packageManager.getLaunchIntentForPackage(PKG_CLOCK)
+    context.start(app ?: Intent(AlarmClock.ACTION_SHOW_ALARMS))
 }
