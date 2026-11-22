@@ -15,4 +15,5 @@
     <string name="ask_claude">Demander à Claude</string>
     <string name="search_google">Chercher sur Google</string>
     <string name="weather_now">Maint.</string>
+    <string name="rain_legend">Probabilité de pluie</string>
 </resources>

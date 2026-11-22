@@ -100,8 +100,22 @@ object NoirType {
     val WeatherSummary = TextStyle(
         fontFamily = NoirFont,
         fontWeight = FontWeight.Light,
-        fontSize = 17.sp,
+        fontSize = 24.sp,
+        lineHeight = 30.sp,
         color = NoirColors.White,
+    )
+    val WeatherDetail = TextStyle(
+        fontFamily = NoirFont,
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
+        color = NoirColors.Muted,
+    )
+    val WeatherLegend = TextStyle(
+        fontFamily = NoirFont,
+        fontWeight = FontWeight.Normal,
+        fontSize = 12.sp,
+        color = NoirColors.Muted,
     )
     val Legend = TextStyle(
         fontFamily = NoirFont,

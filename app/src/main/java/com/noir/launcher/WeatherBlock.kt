@@ -5,6 +5,13 @@ import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -50,23 +57,35 @@ private val COOL = Color(0xFF6CB8FF)
 private val RAIN = Color(0xFF4F9DFF)
 
 private val COL_WIDTH = 52.dp
-private val CHART_HEIGHT = 124.dp
+private val CHART_HEIGHT = 170.dp
+
+// Repères verticaux (dp) : chiffres de pluie, bande de pluie, courbe, heures.
+private const val LABEL_TOP = 1f
+private const val BAND_TOP = 22f
+private const val BAND_HEIGHT = 22f
+private const val CURVE_TOP = 92f
+private const val CURVE_BOTTOM = 124f
+private const val HOUR_TOP = 150f
 
 /**
- * Résumé en une phrase + courbe de température, barres de pluie et heures (défile à l'horizontale).
- * La courbe se dessine à chaque arrivée sur l'accueil ([playKey]).
+ * Phrase qui donne la plage de pluie, puis une bande horaire dont l'intensité suit la probabilité
+ * (le chiffre est écrit dès 30 %), la courbe de température et les heures. Défile à l'horizontale.
+ * Le tracé se rejoue à chaque arrivée sur l'accueil ([playKey]).
  */
 @Composable
 fun WeatherBlock(points: List<HourPoint>, playKey: Int) {
+    val rain = remember(points) { rainSummary(points) }
     Column {
-        BasicText(
-            text = summary(points),
-            style = NoirType.WeatherSummary,
-            modifier = Modifier
+        Column(
+            Modifier
                 .padding(horizontal = 28.dp)
                 .riseIn(delayMillis = 220, key = playKey),
-        )
-        Spacer(Modifier.height(20.dp))
+        ) {
+            BasicText(text = rain.headline, style = NoirType.WeatherSummary)
+            Spacer(Modifier.height(6.dp))
+            BasicText(text = rain.detail, style = NoirType.WeatherDetail)
+        }
+        Spacer(Modifier.height(26.dp))
         Row(
             Modifier
                 // Fondu à droite : indique que ça défile.
@@ -86,6 +105,25 @@ fun WeatherBlock(points: List<HourPoint>, playKey: Int) {
             Spacer(Modifier.width(14.dp))
             WeatherChart(points, playKey)
             Spacer(Modifier.width(28.dp))
+        }
+        Spacer(Modifier.height(10.dp))
+        // Légende : de 0 % (presque invisible) à 100 % (bleu plein).
+        Row(
+            Modifier
+                .padding(horizontal = 28.dp)
+                .riseIn(delayMillis = 400, key = playKey),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            BasicText(text = stringResource(R.string.rain_legend), style = NoirType.WeatherLegend)
+            BasicText(text = "0", style = NoirType.WeatherLegend)
+            Box(
+                Modifier
+                    .size(width = 64.dp, height = 8.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(Brush.horizontalGradient(listOf(RAIN.copy(alpha = 0.06f), RAIN))),
+            )
+            BasicText(text = "100 %", style = NoirType.WeatherLegend)
         }
     }
 }
@@ -121,17 +159,18 @@ private fun WeatherChart(points: List<HourPoint>, playKey: Int) {
         }
     }
 
+    val hourWet = remember {
+        TextStyle(fontFamily = NoirFont, fontWeight = FontWeight.Medium, fontSize = 11.sp, color = NoirColors.White)
+    }
+
     Canvas(
         Modifier
             .width(COL_WIDTH * points.size)
             .height(CHART_HEIGHT),
     ) {
         val col = COL_WIDTH.toPx()
-        val curveTop = 30.dp.toPx()
-        val curveBottom = 62.dp.toPx()
-        val rainBase = 100.dp.toPx()
-        val rainMax = 26.dp.toPx()
-        val hourY = 106.dp.toPx()
+        val curveTop = CURVE_TOP.dp.toPx()
+        val curveBottom = CURVE_BOTTOM.dp.toPx()
         val range = max(tMax - tMin, 1.0).toFloat()
         val p = progress.value
         val pulseV = pulse.value
@@ -145,7 +184,7 @@ private fun WeatherChart(points: List<HourPoint>, playKey: Int) {
             drawText(layout, topLeft = Offset(centerX - layout.size.width / 2f, top), alpha = alpha)
         }
 
-        // Séparation à minuit
+        // Séparation à minuit (passe dans l'espace entre deux cases de la bande)
         points.forEachIndexed { i, pt ->
             if (i > 0 && pt.time.hour == 0) {
                 drawLine(
@@ -157,7 +196,24 @@ private fun WeatherChart(points: List<HourPoint>, playKey: Int) {
             }
         }
 
-        // Courbe de température, tracée progressivement
+        // Bande de pluie : une case par heure, d'autant plus bleue que la pluie est probable.
+        // Elle se remplit de gauche à droite après le début de la courbe.
+        val rainP = ((p - 0.3f) / 0.7f).coerceIn(0f, 1f)
+        points.forEachIndexed { i, pt ->
+            val prob = pt.rainProb.coerceIn(0, 100)
+            val grow = (rainP * 1.6f - i.toFloat() / points.size * 0.6f).coerceIn(0f, 1f)
+            drawRoundRect(
+                color = RAIN.copy(alpha = (0.06f + 0.94f * prob / 100f) * grow),
+                topLeft = Offset(col * i + 1.dp.toPx(), BAND_TOP.dp.toPx()),
+                size = Size(col - 2.dp.toPx(), BAND_HEIGHT.dp.toPx()),
+                cornerRadius = CornerRadius(6.dp.toPx()),
+            )
+            if (prob >= 30) {
+                label("$prob %", tempStyle, cx(i), LABEL_TOP.dp.toPx(), alpha = grow)
+            }
+        }
+
+        // Courbe de température, tracée progressivement, en dégradé chaud (haut) / froid (bas)
         val path = Path()
         points.forEachIndexed { i, pt ->
             if (i == 0) {
@@ -174,51 +230,43 @@ private fun WeatherChart(points: List<HourPoint>, playKey: Int) {
         val measure = PathMeasure().also { it.setPath(path, false) }
         val shown = Path()
         measure.getSegment(0f, measure.length * p, shown, true)
-        val curveBrush = Brush.verticalGradient(
-            colors = listOf(WARM, COOL),
-            startY = curveTop,
-            endY = curveBottom,
-        )
         drawPath(
             path = shown,
-            brush = curveBrush,
+            brush = Brush.verticalGradient(
+                colors = listOf(WARM, COOL),
+                startY = curveTop,
+                endY = curveBottom,
+            ),
             style = Stroke(width = 2.5.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round),
         )
 
-        // Barres de pluie (poussent après la courbe), points, températures toutes les 3 h, heures
-        val rainP = ((p - 0.3f) / 0.7f).coerceIn(0f, 1f)
+        // Points et températures toutes les 3 h, heures (en blanc quand la pluie est probable)
         points.forEachIndexed { i, pt ->
             val x = cx(i)
             val reveal = (p * points.size - i).coerceIn(0f, 1f)
-
-            val grow = (rainP * 1.6f - i.toFloat() / points.size * 0.6f).coerceIn(0f, 1f)
-            val h = rainMax * (pt.rainProb.coerceIn(0, 100) / 100f) * grow
-            if (h > 1f) {
-                drawRoundRect(
-                    color = RAIN.copy(alpha = 0.55f),
-                    topLeft = Offset(x - 6.dp.toPx(), rainBase - h),
-                    size = Size(12.dp.toPx(), h),
-                    cornerRadius = CornerRadius(3.dp.toPx()),
-                )
-            }
 
             if (i % 3 == 0) {
                 val y = cy(pt.temp)
                 drawCircle(
                     color = tempColor(pt.temp, tMin, range).copy(alpha = reveal),
-                    radius = 3.dp.toPx() * (0.4f + 0.6f * reveal),
+                    radius = 3.5.dp.toPx() * (0.4f + 0.6f * reveal),
                     center = Offset(x, y),
                 )
                 label("${pt.temp.roundToInt()}°", tempStyle, x, y - 26.dp.toPx(), alpha = reveal)
             }
 
-            if (i == 0) label(nowLabel, nowStyle, x, hourY) else label("${pt.time.hour} h", hourStyle, x, hourY)
+            val hourTop = HOUR_TOP.dp.toPx()
+            when {
+                i == 0 -> label(nowLabel, nowStyle, x, hourTop)
+                pt.rainProb >= WET_PROB -> label("${pt.time.hour} h", hourWet, x, hourTop)
+                else -> label("${pt.time.hour} h", hourStyle, x, hourTop)
+            }
         }
 
         // Anneau « maintenant »
         val y0 = cy(points[0].temp)
         drawCircle(
-            color = tempColor(points[0].temp, tMin, range).copy(alpha = (1f - pulseV) * 0.8f * p),
+            color = Color.White.copy(alpha = (1f - pulseV) * 0.6f * p),
             radius = (4f + 14f * pulseV).dp.toPx(),
             center = Offset(cx(0), y0),
             style = Stroke(width = 1.dp.toPx()),

@@ -8,6 +8,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.util.Locale
 import kotlin.math.roundToInt
 
 // Lieu de la météo (Allauch). Données : Open-Meteo, gratuit et sans compte.
@@ -110,15 +111,52 @@ fun describe(code: Int): String = when (code) {
     else -> ""
 }
 
-fun summary(points: List<HourPoint>): String {
+/** Une heure compte comme « pluvieuse » à partir de cette probabilité. */
+const val WET_PROB = 40
+
+data class RainSummary(val headline: String, val detail: String)
+
+private fun hourText(h: Int): String = if (h == 0) "minuit" else "$h h"
+
+private fun mmText(mm: Double): String = when {
+    mm >= 1.0 -> mm.roundToInt().toString()
+    else -> String.format(Locale.FRENCH, "%.1f", mm)
+}
+
+/**
+ * Phrase d'en-tête de la météo : la plage de pluie en clair (« Pluie de 17 h à 22 h »), et en dessous
+ * le pic de probabilité et la quantité attendue. Sans pluie : la température et le ciel.
+ */
+fun rainSummary(points: List<HourPoint>): RainSummary {
     val first = points.first()
-    val wet = points.firstOrNull { it.rainProb >= 50 || it.rainMm >= 0.3 }
-    val rain = when {
-        wet == null -> "pas de pluie prévue"
-        wet === first -> "pluie en cours"
-        else -> "pluie vers ${wet.time.hour} h"
+    val start = points.indexOfFirst { it.rainProb >= WET_PROB }
+    if (start < 0) {
+        val peak = points.maxByOrNull { it.rainProb }
+        val detail = if (peak != null && peak.rainProb >= 10) {
+            "Risque faible : ${peak.rainProb} % à ${hourText(peak.time.hour)}"
+        } else {
+            listOf("${first.temp.roundToInt()}°", describe(first.code)).filter { it.isNotBlank() }.joinToString(" · ")
+        }
+        return RainSummary("Pas de pluie prévue", detail)
     }
-    return listOf("${first.temp.roundToInt()}°", describe(first.code), rain)
-        .filter { it.isNotBlank() }
-        .joinToString("  ·  ")
+    var end = start
+    while (end + 1 < points.size && points[end + 1].rainProb >= WET_PROB) end++
+    val run = points.subList(start, end + 1)
+    val peak = run.maxBy { it.rainProb }
+    val total = run.sumOf { it.rainMm }
+
+    val endHour = (points[end].time.hour + 1) % 24
+    val runsToEnd = end == points.size - 1
+    val tomorrow = points[start].time.toLocalDate() != first.time.toLocalDate()
+    val headline = when {
+        start == 0 && runsToEnd -> "Pluie sur les 24 prochaines heures"
+        start == 0 -> "Pluie jusqu'à ${hourText(endHour)}"
+        runsToEnd -> "Pluie ${if (tomorrow) "demain " else ""}à partir de ${hourText(points[start].time.hour)}"
+        else -> "Pluie ${if (tomorrow) "demain " else ""}de ${hourText(points[start].time.hour)} à ${hourText(endHour)}"
+    }
+    val detail = buildString {
+        append("Pic à ${hourText(peak.time.hour)} : ${peak.rainProb} %")
+        if (total >= 0.3) append(" · environ ${mmText(total)} mm au total")
+    }
+    return RainSummary(headline, detail)
 }
