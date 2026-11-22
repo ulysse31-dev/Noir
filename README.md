@@ -1,6 +1,6 @@
 # Noir
 
-Lanceur Android minimaliste : fond noir pur, recherche d'applis (texte seul), heure quand la recherche est vide, une page Lire à gauche et le widget Google Agenda en plein écran à droite.
+Lanceur Android minimaliste : fond noir pur, recherche d'applis (texte seul), heure quand la recherche est vide, et le widget Google Agenda en plein écran à droite.
 
 ## Installer
 
@@ -15,7 +15,6 @@ L'APK est signé avec une clé fixe (`app/noir.keystore`) et son numéro de vers
 - Accueil, recherche vide : heure, météo des 24 prochaines heures (Allauch, via Open-Meteo : courbe de température, barres de pluie, heures ; défile à l'horizontale ; la courbe se dessine à chaque arrivée sur l'accueil), raccourcis WhatsApp / Messages / Téléphone / Maps / Chrome / Spotify en pictos blancs alignés sur une ligne (sans texte), l'appareil photo à l'extrémité droite. Le clavier ouvert ne garde que l'heure. Toucher l'heure ouvre l'appli Horloge de Google.
 - Recherche : dès qu'on tape, deux icônes grises apparaissent à droite du champ : Claude (claude.ai, question pré-remplie) et Google. Ce sont les icônes réelles des applis installées, passées en niveaux de gris (pictogramme blanc neutre si l'appli est absente). Touche « Go » : Claude si la saisie commence ou finit par « ? », Google s'il n'y a aucun résultat d'appli, sinon le premier résultat.
 - Touche Accueil : retour à l'accueil, recherche vidée, clavier refermé.
-- Page de gauche (glisser vers la droite) : Lire = un poème à apprendre. Un poème à la fois, en grand : l'œil barré affiche seulement les initiales pour réciter, la flèche passe au suivant, le rond blanc coché marque le poème comme appris et amène le suivant. La progression (« 3 / 19 apprises ») et les textes déjà chargés restent sur le téléphone. Les textes viennent de Wikisource (domaine public), seuls le titre et l'auteur sont dans le code : `POEMS` (Poems.kt).
 - Animations : ressort à l'appui sur les icônes, entrée décalée des raccourcis et des résultats, tracé de la courbe météo, pages voisines qui reculent pendant le glissement. Les pulsations (deux-points, anneau « maintenant ») s'arrêtent après quelques secondes pour ménager la batterie.
 - Page de droite (glisser vers la gauche) : le widget Google Agenda « jour » est choisi automatiquement (accepter la demande d'Android au premier passage) et occupe tout l'écran. À défaut de widget « jour », la liste « agenda » est prise. « Changer de widget » en bas à gauche ouvre la liste pour en choisir un autre.
 
@@ -25,18 +24,6 @@ L'APK est signé avec une clé fixe (`app/noir.keystore`) et son numéro de vers
 - Police et tailles : `Theme.kt`. Police par défaut = sans-serif du système.
 - Lieu de la météo : `WEATHER_LAT` / `WEATHER_LON` (Weather.kt).
 - Raccourcis : `Shortcuts.kt`.
-- Poèmes de la page Lire : `POEMS` (Poems.kt), une ligne par poème (titre, auteur).
 - Position de l'heure : `top = 100.dp` dans `HomeContent` (HomePage.kt).
 
 Pictos : Material Symbols (Google), licence Apache 2.0.
-
-## Poèmes : en cas de souci
-
-Un poème qui ne se charge pas n'est jamais retiré pour de bon : il est simplement écarté jusqu'à la prochaine ouverture.
-Si aucun ne se charge, la page affiche « Réessayer » et, en petit, la cause (nombre de résultats, pages lues…).
-
-## Page de gauche : poème ou sudoku
-
-Deux onglets en haut (Poème / Sudoku), le choix est mémorisé. Le sudoku est généré sur le téléphone (aucun réseau, solution unique) :
-3 niveaux (Facile 40 indices, Moyen 32, Difficile 26 ; « Niveau » change de niveau et crée une grille), « Nouvelle grille », « Effacer ».
-Chiffres de départ en blanc, tes chiffres en bleu, doublons en rouge. La grille en cours est sauvegardée à chaque case.
