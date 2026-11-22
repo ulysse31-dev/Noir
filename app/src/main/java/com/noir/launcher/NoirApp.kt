@@ -21,8 +21,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-/** Pages, de gauche à droite : Accueil, Agenda (widget). */
-private const val HOME_PAGE = 0
+/** Pages, de gauche à droite : Objectifs, Accueil, Agenda (widget). */
+private const val GOALS_PAGE = 0
+private const val HOME_PAGE = 1
 
 @Composable
 fun NoirApp(
@@ -32,7 +33,7 @@ fun NoirApp(
     configureWidget: (Int, (Boolean) -> Unit) -> Unit,
 ) {
     val context = LocalContext.current
-    val pagerState = rememberPagerState(initialPage = HOME_PAGE, pageCount = { 2 })
+    val pagerState = rememberPagerState(initialPage = HOME_PAGE, pageCount = { 3 })
     val scope = rememberCoroutineScope()
 
     var query by rememberSaveable { mutableStateOf("") }
@@ -80,6 +81,10 @@ fun NoirApp(
                 },
         ) {
             when (page) {
+                GOALS_PAGE -> GoalsPage(
+                    active = pagerState.currentPage == GOALS_PAGE,
+                    resumeTick = resumeTick,
+                )
                 HOME_PAGE -> HomePage(
                     query = query,
                     onQueryChange = { query = it },

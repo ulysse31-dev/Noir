@@ -1,6 +1,6 @@
 # Noir
 
-Lanceur Android minimaliste : fond noir pur, recherche d'applis (texte seul), heure quand la recherche est vide, et le widget Google Agenda en plein écran à droite.
+Lanceur Android minimaliste : fond noir pur, recherche d'applis (texte seul), heure quand la recherche est vide, une page Objectifs à gauche et le widget Google Agenda en plein écran à droite.
 
 ## Installer
 
@@ -27,3 +27,9 @@ L'APK est signé avec une clé fixe (`app/noir.keystore`) et son numéro de vers
 - Position de l'heure : `top = 100.dp` dans `HomeContent` (HomePage.kt).
 
 Pictos : Material Symbols (Google), licence Apache 2.0.
+
+## Page Objectifs (à gauche de l'accueil)
+
+Une liste d'objectifs à tenir (par exemple « Nourriture non transformée »). Chaque objectif affiche la semaine en cours en 7 ronds : touche un rond pour cocher un jour tenu (blanc plein), retouche pour décocher. Aujourd'hui est entouré de blanc, les jours passés non tenus en gris, les jours à venir ne se cochent pas. À droite, le nombre de jours tenus cette semaine ; dessous, la série en cours.
+Toucher le nom ouvre le détail : jours tenus du mois, série en cours, meilleure série et calendrier du mois (flèches pour remonter dans les mois, jours passés modifiables).
+« Modifier » : le moins rouge retire un objectif (confirmation « Supprimer ? », ses jours cochés sont effacés), les chevrons réordonnent, la ligne du bas ajoute. Tout est enregistré sur le téléphone (`goals_json`, Goals.kt), sans réseau. « Retour » revient de l'écran de détail à la liste, puis à l'accueil.
