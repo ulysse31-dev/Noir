@@ -46,5 +46,6 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           cp app/build/outputs/apk/debug/app-debug.apk Noir.apk
+          cp shorts/build/outputs/apk/debug/shorts-debug.apk SansShorts.apk
           gh release delete latest --yes --cleanup-tag || true
-          gh release create latest Noir.apk --title "Noir (dernier build)" --notes "APK à installer sur le téléphone."
+          gh release create latest Noir.apk SansShorts.apk --title "Noir (dernier build)" --notes "Noir.apk : le lanceur. SansShorts.apk : le bloqueur de Shorts YouTube (appli séparée)."

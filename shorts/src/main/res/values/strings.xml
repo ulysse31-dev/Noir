@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Sans Shorts</string>
+    <string name="shorts_blocker_description">Quitte automatiquement les Shorts dès qu\'ils s\'ouvrent dans YouTube. Le reste de YouTube (accueil, recherche, vidéos) fonctionne normalement. Rien n\'est lu en dehors de YouTube, rien n\'est enregistré ni envoyé.</string>
+</resources>

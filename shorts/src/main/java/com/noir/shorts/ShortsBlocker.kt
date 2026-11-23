@@ -1,4 +1,4 @@
-package com.noir.launcher
+package com.noir.shorts
 
 import android.accessibilityservice.AccessibilityService
 import android.graphics.Rect

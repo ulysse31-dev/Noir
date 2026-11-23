@@ -15,6 +15,4 @@
     <string name="ask_claude">Demander à Claude</string>
     <string name="search_google">Chercher sur Google</string>
     <string name="weather_now">Maint.</string>
-    <string name="shorts_blocker_label">Noir · Bloquer les Shorts</string>
-    <string name="shorts_blocker_description">Quitte automatiquement les Shorts dès qu\'ils s\'ouvrent dans YouTube. Le reste de YouTube (accueil, recherche, vidéos) fonctionne normalement. Rien n\'est lu en dehors de YouTube, rien n\'est enregistré ni envoyé.</string>
 </resources>

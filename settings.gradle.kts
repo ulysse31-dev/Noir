@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Noir"
 include(":app")
+include(":shorts")

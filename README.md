@@ -34,11 +34,14 @@ Une liste d'objectifs à tenir (par exemple « Nourriture non transformée »). 
 Toucher le nom ouvre le détail : jours tenus du mois, série en cours, meilleure série et calendrier du mois (flèches pour remonter dans les mois, jours passés modifiables).
 « Modifier » : le moins rouge retire un objectif (confirmation « Supprimer ? », ses jours cochés sont effacés), les chevrons réordonnent, la ligne du bas ajoute. Tout est enregistré sur le téléphone (`goals_json`, Goals.kt), sans réseau. « Retour » revient de l'écran de détail à la liste, puis à l'accueil.
 
-## Bloqueur de Shorts YouTube
+## Sans Shorts (appli séparée)
 
-Noir contient un service d'accessibilité qui quitte les Shorts dès qu'ils s'affichent dans l'appli YouTube (touche « Retour » automatique, petit message « Pas de Shorts. »). L'accueil, la recherche et les vidéos normales de YouTube ne sont pas touchés. Si les Shorts restent affichés après trois « Retour » rapprochés, Noir renvoie à l'écran d'accueil.
+Le dossier `shorts/` contient une deuxième appli, **Sans Shorts** (`com.noir.shorts`), compilée en même temps que Noir et publiée dans les Releases sous `SansShorts.apk`. Elle est séparée du lanceur car elle utilise l'accessibilité, que Google Play Protect surveille : si Play Protect bloque un jour le bloqueur, Noir n'est pas touché.
 
-Activer : Paramètres > Accessibilité > Applis installées (ou « Services ») > **Noir · Bloquer les Shorts** > activer.
-Si l'interrupteur est grisé (« Paramètre restreint », Android 13 et plus, car l'APK ne vient pas du Play Store) : Paramètres > Applis > Noir > menu ⋮ en haut à droite > « Autoriser les paramètres restreints », puis recommencer.
+Ce qu'elle fait : quitte les Shorts dès qu'ils s'affichent dans l'appli YouTube (touche « Retour » automatique, message « Pas de Shorts. »). L'accueil, la recherche et les vidéos normales de YouTube ne sont pas touchés. Si les Shorts restent affichés après trois « Retour » rapprochés, elle renvoie à l'écran d'accueil.
 
-Le service n'écoute que YouTube (`com.google.android.youtube`), ne cherche que le lecteur de Shorts (`reel_player_page_container`), n'enregistre rien et n'utilise pas le réseau. Si YouTube renomme ce lecteur et que les Shorts repassent, ajouter le nouveau nom dans `SHORTS_VIEW_IDS` (ShortsBlocker.kt).
+Installer : Play Protect bloque l'installation (« Appli bloquée pour protéger votre appareil »). Play Store > icône de profil > Play Protect > roue crantée > désactiver « Analyser les applis avec Play Protect », installer `SansShorts.apk`, puis réactiver Play Protect.
+
+Activer : ouvrir Sans Shorts > « Activer dans l'accessibilité » > Sans Shorts > activer. Si l'interrupteur est grisé (« Paramètre restreint ») : « Infos de l'appli » > menu ⋮ > « Autoriser les paramètres restreints », puis recommencer. L'écran de Sans Shorts indique « Actif » quand c'est bon.
+
+Le service n'écoute que YouTube (`com.google.android.youtube`), ne cherche que le lecteur de Shorts (`reel_player_page_container`), n'enregistre rien et n'a pas accès au réseau. Si YouTube renomme ce lecteur et que les Shorts repassent, ajouter le nouveau nom dans `SHORTS_VIEW_IDS` (shorts/…/ShortsBlocker.kt).
