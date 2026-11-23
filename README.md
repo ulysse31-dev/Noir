@@ -33,3 +33,12 @@ Pictos : Material Symbols (Google), licence Apache 2.0.
 Une liste d'objectifs à tenir (par exemple « Nourriture non transformée »). Chaque objectif affiche la semaine en cours en 7 ronds : touche un rond pour cocher un jour tenu (blanc plein), retouche pour décocher. Aujourd'hui est entouré de blanc, les jours passés non tenus en gris, les jours à venir ne se cochent pas. À droite, le nombre de jours tenus cette semaine ; dessous, la série en cours.
 Toucher le nom ouvre le détail : jours tenus du mois, série en cours, meilleure série et calendrier du mois (flèches pour remonter dans les mois, jours passés modifiables).
 « Modifier » : le moins rouge retire un objectif (confirmation « Supprimer ? », ses jours cochés sont effacés), les chevrons réordonnent, la ligne du bas ajoute. Tout est enregistré sur le téléphone (`goals_json`, Goals.kt), sans réseau. « Retour » revient de l'écran de détail à la liste, puis à l'accueil.
+
+## Bloqueur de Shorts YouTube
+
+Noir contient un service d'accessibilité qui quitte les Shorts dès qu'ils s'affichent dans l'appli YouTube (touche « Retour » automatique, petit message « Pas de Shorts. »). L'accueil, la recherche et les vidéos normales de YouTube ne sont pas touchés. Si les Shorts restent affichés après trois « Retour » rapprochés, Noir renvoie à l'écran d'accueil.
+
+Activer : Paramètres > Accessibilité > Applis installées (ou « Services ») > **Noir · Bloquer les Shorts** > activer.
+Si l'interrupteur est grisé (« Paramètre restreint », Android 13 et plus, car l'APK ne vient pas du Play Store) : Paramètres > Applis > Noir > menu ⋮ en haut à droite > « Autoriser les paramètres restreints », puis recommencer.
+
+Le service n'écoute que YouTube (`com.google.android.youtube`), ne cherche que le lecteur de Shorts (`reel_player_page_container`), n'enregistre rien et n'utilise pas le réseau. Si YouTube renomme ce lecteur et que les Shorts repassent, ajouter le nouveau nom dans `SHORTS_VIEW_IDS` (ShortsBlocker.kt).
